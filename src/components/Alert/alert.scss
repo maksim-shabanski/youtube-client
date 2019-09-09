@@ -1,0 +1,15 @@
+.alert {
+  position: relative;
+
+  max-width: 650px;
+  margin: 15px auto;
+  padding: 15px 20px;
+
+  font-size: 12px;
+  text-align: center;
+  color: var(--gray);
+
+  &--warning {
+    color: var(--red);
+  }
+}  
