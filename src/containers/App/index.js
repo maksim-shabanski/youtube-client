@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import Search from '../../components/Search';
-import Alert from '../../components/Alert'
+import Alert from '../../components/Alert';
+import Loader from '../../components/Loader';
 import './app.scss';
 
 class App extends Component {
   state = {
     searchText: '',
     alertText: 'You haven\'t searched anything yet.',
+    isLoading: false,
     data: [],
   }
 
@@ -22,7 +24,7 @@ class App extends Component {
   }
 
   render() {
-    const { searchText, alertText } = this.state;
+    const { searchText, alertText, isLoading } = this.state;
 
     return (
       <main className="wrapper">
@@ -32,6 +34,7 @@ class App extends Component {
           onSubmit={this.handleSubmitForm}
         />
         {alertText && <Alert alertText={alertText} />}
+        {isLoading && <Loader />}
       </main>
     );
   }
