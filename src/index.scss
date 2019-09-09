@@ -1,0 +1,47 @@
+:root {
+  --black: #212529;
+  --gray: #6c757d;
+  --grey: #f0f0f0;
+  --greyLight: #f8f8f8;
+  --greyDark: #e9e9e9;
+  --red: #c82333;
+  --redLight: #dc3545;
+  --redDark: #bd2130;
+  --borderGrey: 1px solid #ccc;
+  --borderRadius: 2px;
+}
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+blockquote,
+p,
+pre,
+dl,
+dd,
+ol,
+ul,
+figure,
+hr,
+fieldset,
+legend {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  line-height: 1.3;
+  font-family: Arial, sans-serif;
+  color: var(--black);
+}
