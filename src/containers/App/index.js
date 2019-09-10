@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Search from '../../components/Search';
 import Alert from '../../components/Alert';
 import Loader from '../../components/Loader';
+import Slider from '../Slider'
 import './app.scss';
 
 class App extends Component {
@@ -33,6 +34,7 @@ class App extends Component {
           onChange={this.handleSearchTextChange}
           onSubmit={this.handleSubmitForm}
         />
+        <Slider />
         {alertText && <Alert alertText={alertText} />}
         {isLoading && <Loader />}
       </main>
