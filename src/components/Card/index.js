@@ -7,7 +7,7 @@ const Card = ({ data }) => {
   const readableDate = new Date(date).toDateString().slice(4);
 
   return (
-    <article className="card">
+    <div className="card">
       <div className="card__thumbnail">
         <a href={url}>
           <img className="card__img" src={image} alt="" />
@@ -35,7 +35,7 @@ const Card = ({ data }) => {
           <span className="card__views">{viewCount} views</span>
         </footer>
       </div>
-    </article>
+    </div>
   );
 }
 
