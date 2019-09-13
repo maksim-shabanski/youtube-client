@@ -25,22 +25,11 @@ class App extends Component {
     });
   }
 
-  addHistory(searchText) {
-    const { history } = this.state;
-    history.push(searchText);
-    this.setState({ history });
-  }
-
-  resetVideosData() {
-    const videosData = [];
-    this.setState({ videosData });
-  }
-
   handleSubmitForm = (e) => {
     e.preventDefault();
 
     const { history, searchText } = this.state;
-    const lastSearchText = history[history.length - 1];
+    const lastSearchText = history[history.length - 1] || '';
 
     if (searchText === '') {
       return null;
@@ -50,8 +39,15 @@ class App extends Component {
       return null;
     }
 
-    this.resetVideosData();
-    this.addHistory(searchText);
+    history.push(searchText);
+
+    this.setState({
+      history,
+      videosData: [],
+      alertText: '',
+      isLoading: true, 
+    });
+
     this.getVideosData();
   }
 
@@ -80,12 +76,13 @@ class App extends Component {
   setVideosData(nextVideosData) {
     const { videosData } = this.state;
     this.setState({
+      isLoading: false,
       videosData: videosData.concat(nextVideosData)
     });
   }
 
   render() {
-    const { searchText, alertText, isLoading } = this.state;
+    const { videosData, searchText, alertText, isLoading } = this.state;
 
     return (
       <main className="wrapper">
@@ -94,7 +91,7 @@ class App extends Component {
           onChange={this.handleSearchTextChange}
           onSubmit={this.handleSubmitForm}
         />
-        <Slider />
+        <Slider videosData={videosData} />
         {alertText && <Alert alertText={alertText} />}
         {isLoading && <Loader />}
       </main>

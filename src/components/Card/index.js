@@ -2,36 +2,44 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './card.scss';
 
+const VIDEO_PATH = 'https://www.youtube.com/watch?v=';
+const CHANNEL_PATH = 'https://www.youtube.com/channel/';
+
 const Card = ({ data }) => {
-  const { url, image, channelUrl, channelName, title, date, description, viewCount } = data;
-  const readableDate = new Date(date).toDateString().slice(4);
+  const { id, snippet, statistics } = data;
+  const { channelId, channelTitle, publishedAt, title, description, thumbnails } = snippet;
+  const { high: { url: imageUrl } } = thumbnails;
+  const { viewCount } = statistics;
+  const readableDate = new Date(publishedAt).toDateString().slice(4);
 
   return (
     <div className="card">
       <div className="card__thumbnail">
-        <a href={url}>
-          <img className="card__img" src={image} alt="" />
+        <a href={`${VIDEO_PATH}${id}`}>
+          <img className="card__img" src={imageUrl} alt="" />
         </a>
       </div>
       <div className="card__content">
         <div className="card__details">
           <header className="card__heading">
             <span className="card__author">
-              Channel by <a href={channelUrl}>{channelName}</a>
+              Channel by <a href={`${CHANNEL_PATH}${channelId}`}>{channelTitle}</a>
             </span>
             <h2 className="card__title">
-              <a href={url}>{title}</a>
+              <a href={`${VIDEO_PATH}${id}`}>
+                {title}
+              </a>
             </h2>
           </header>
           <p className="card__desc">
-            <time className="card__date" dateTime={date}>
+            <time className="card__date" dateTime={publishedAt}>
               {readableDate}
             </time> <br />
             {description}
           </p>
         </div>
         <footer className="card__footer">
-          <a className="btn" href={url}>See video</a>
+          <a className="btn" href={`${VIDEO_PATH}${id}`}>See video</a>
           <span className="card__views">{viewCount} views</span>
         </footer>
       </div>
@@ -40,16 +48,7 @@ const Card = ({ data }) => {
 }
 
 Card.propTypes = {
-  data: PropTypes.shape({
-    url: PropTypes.string,
-    image: PropTypes.string,
-    channelUrl: PropTypes.string,
-    channelName: PropTypes.string,
-    title: PropTypes.string,
-    date: PropTypes.string,
-    description: PropTypes.string,
-    viewCount: PropTypes.number,
-  }).isRequired,
+  data: PropTypes.object.isRequired,
 };
 
 export default Card;
