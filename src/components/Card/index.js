@@ -40,7 +40,7 @@ const Card = ({ data }) => {
           </p>
         </div>
         <footer className="card__footer">
-          <a className="btn" href={`${VIDEO_PATH}${id}`}>See video</a>
+          <a className="btn" href={`${VIDEO_PATH}${id}`}>Watch video</a>
           <span className="card__views">{shrinkNumber(viewCount)} views</span>
         </footer>
       </div>
