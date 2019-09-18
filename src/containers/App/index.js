@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import Search from '../../components/Search';
 import Alert from '../../components/Alert';
 import Loader from '../../components/Loader';
-import Slider from '../Slider';
+import Slider from '../../components/Slider';
 import YouTubeAPI from '../../services/youtubeAPI';
+import { ANIMATION_DURATION, TOTAL_CARDS_ON_SLIDES } from '../../utilities/constants';
 import './app.scss';
 
 const youTubeAPI = new YouTubeAPI();
@@ -16,7 +17,61 @@ class App extends Component {
     isLoading: false,
     maxVideoResults: 16,
     nextPageToken: '',
+    selectedSlide: 1,
+    isAnimated: false,
     videosData: [],
+  }
+
+  turnAnimatedOff() {
+    setTimeout(() => {
+      this.setState({ isAnimated: false });
+    }, ANIMATION_DURATION);
+  }
+
+  changeSlide(btn) {
+    let { selectedSlide } = this.state;
+
+    if (btn === 'next') {
+      selectedSlide += 1;
+    } else {
+      selectedSlide -= 1;
+    }
+    
+    this.setState({
+      selectedSlide,
+      isAnimated: true,
+    }, () => {
+      if (this.isNeedToLoadCards()) {
+        this.getVideosData();
+      }
+    });
+
+    this.turnAnimatedOff();
+  }
+
+  isNeedToLoadCards() {
+    const { selectedSlide, videosData } = this.state;
+    const numberCards = videosData.length;
+    const numberSlides = numberCards / TOTAL_CARDS_ON_SLIDES;
+
+    // TODO: need to consider a case when we reached the last slide and prohibit switch a slide ahead
+    
+    if (selectedSlide >= numberSlides - 3) {
+      return true;
+    }
+
+    return false;
+  }
+
+  handleSliderBtnClick = (e) => {
+    const { btn } = e.target.dataset;
+    const { isAnimated } = this.state;
+
+    if (isAnimated) {
+      return null;
+    }
+
+    this.changeSlide(btn);
   }
 
   handleSearchTextChange = ({ target: { value } }) => {
@@ -43,6 +98,7 @@ class App extends Component {
 
     this.setState({
       history,
+      selectedSlide: 1,
       videosData: [],
       alertText: '',
       isLoading: true, 
@@ -82,7 +138,13 @@ class App extends Component {
   }
 
   render() {
-    const { videosData, searchText, alertText, isLoading } = this.state;
+    const {
+      searchText,
+      alertText,
+      isLoading,
+      videosData,
+      selectedSlide,
+    } = this.state;
 
     return (
       <main className="wrapper">
@@ -91,7 +153,13 @@ class App extends Component {
           onChange={this.handleSearchTextChange}
           onSubmit={this.handleSubmitForm}
         />
-        <Slider videosData={videosData} />
+        {videosData.length !== 0 && 
+          <Slider 
+            videosData={videosData}
+            selectedSlide={selectedSlide}
+            onClick={this.handleSliderBtnClick}
+          />
+        }
         {alertText && <Alert alertText={alertText} />}
         {isLoading && <Loader />}
       </main>
