@@ -2,17 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './alert.scss';
 
-const Alert = ({ variant, alertText }) => {
+const Alert = ({ variant, text }) => {
   const alertVariant = variant ? `alert--${variant}` : '';
   return (
     <div className={`alert ${alertVariant}`.trim()}>
-      {alertText}
+      {text}
     </div>
   );
 };
 
 Alert.propTypes = {
-  alertText: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
   variant: PropTypes.string,
 };
 

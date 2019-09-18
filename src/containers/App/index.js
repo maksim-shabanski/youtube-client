@@ -13,7 +13,10 @@ class App extends Component {
   state = {
     history: [],
     searchText: '',
-    alertText: 'You haven\'t searched anything yet.',
+    alert: {
+      text: 'You haven\'t searched anything yet.',
+      variant: '',
+    },
     isLoading: false,
     maxVideoResults: 16,
     nextPageToken: '',
@@ -100,7 +103,10 @@ class App extends Component {
       history,
       selectedSlide: 1,
       videosData: [],
-      alertText: '',
+      alert: {
+        text: '',
+        variant: '',
+      },
       isLoading: true, 
     });
 
@@ -109,8 +115,14 @@ class App extends Component {
 
   async getVideosData() {
     const id = await this.getVideosId();
-    const {items: videosData } = await youTubeAPI.fetchVideosData(id);
-    this.setVideosData(videosData);
+    const { items: videosData } = await youTubeAPI.fetchVideosData(id);
+
+    if (videosData.length === 0) {
+      const alertText = 'We are so sorry! We couldn\'t find any video for your request.';
+      this.setAlertOption(alertText);
+    } else {
+      this.setVideosData(videosData);
+    }
   }
 
   async getVideosId() {
@@ -123,6 +135,16 @@ class App extends Component {
 
     this.setNextPageToken(nextPageToken);
     return id;
+  }
+
+  setAlertOption(text) {
+    this.setState({
+      alert: {
+        text,
+        variant: 'warning',
+      },
+      isLoading: false,
+    })
   }
 
   setNextPageToken(nextPageToken) {
@@ -140,11 +162,12 @@ class App extends Component {
   render() {
     const {
       searchText,
-      alertText,
+      alert,
       isLoading,
       videosData,
       selectedSlide,
     } = this.state;
+    const { text: alertText, variant: alertVariant } = alert;
 
     return (
       <main className="wrapper">
@@ -160,7 +183,7 @@ class App extends Component {
             onClick={this.handleSliderBtnClick}
           />
         }
-        {alertText && <Alert alertText={alertText} />}
+        {alertText && <Alert text={alertText} variant={alertVariant} />}
         {isLoading && <Loader />}
       </main>
     );
