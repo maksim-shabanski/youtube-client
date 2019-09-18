@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import shrinkNumber from '../../utilities/shrinkNumber';
 import './card.scss';
 
 const VIDEO_PATH = 'https://www.youtube.com/watch?v=';
@@ -40,7 +41,7 @@ const Card = ({ data }) => {
         </div>
         <footer className="card__footer">
           <a className="btn" href={`${VIDEO_PATH}${id}`}>See video</a>
-          <span className="card__views">{viewCount} views</span>
+          <span className="card__views">{shrinkNumber(viewCount)} views</span>
         </footer>
       </div>
     </div>
