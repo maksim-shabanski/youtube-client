@@ -114,14 +114,20 @@ class App extends Component {
   }
 
   async getVideosData() {
-    const id = await this.getVideosId();
-    const { items: videosData } = await youTubeAPI.fetchVideosData(id);
+    try {
+      const id = await this.getVideosId();
+      const { items: videosData } = await youTubeAPI.fetchVideosData(id);
 
-    if (videosData.length === 0) {
-      const alertText = 'We are so sorry! We couldn\'t find any video for your request.';
+      if (videosData.length === 0) {
+        const alertText = 'We are so sorry! We couldn\'t find any video for your request.';
+        this.setAlertOption(alertText);
+      } else {
+        this.setVideosData(videosData);
+      }
+    } catch(error) {
+      // TODO: don't show error when we created a slider and other videos don't download
+      const alertText = 'Something was wrong! Check your network connection and try searching again.';
       this.setAlertOption(alertText);
-    } else {
-      this.setVideosData(videosData);
     }
   }
 
