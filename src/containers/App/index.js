@@ -29,13 +29,13 @@ class App extends Component {
     videosData: [],
   }
 
-  turnAnimatedOff() {
+  turnAnimatedOff = () => {
     setTimeout(() => {
       this.setState({ isSliderAnimated: false });
     }, ANIMATION_DURATION);
   }
 
-  changeSlide(direction) {
+  changeSlide = (direction) => {
     let { selectedSlide } = this.state;
 
     if (direction === 'next') {
@@ -56,7 +56,7 @@ class App extends Component {
     this.turnAnimatedOff();
   }
 
-  isNeedToLoadCards() {
+  isNeedToLoadCards = () => {
     const { selectedSlide, videosData } = this.state;
     const numberCards = videosData.length;
     const numberSlides = numberCards / TOTAL_CARDS_ON_SLIDES;
@@ -146,7 +146,7 @@ class App extends Component {
     return id;
   }
 
-  setAlertOption(text) {
+  setAlertOption = (text) => {
     this.setState({
       alert: {
         text,
@@ -156,11 +156,11 @@ class App extends Component {
     })
   }
 
-  setNextPageToken(nextPageToken) {
+  setNextPageToken = (nextPageToken) => {
     this.setState({ nextPageToken });
   }
 
-  setVideosData(nextVideosData) {
+  setVideosData = (nextVideosData) => {
     const { videosData } = this.state;
     this.setState({
       isLoading: false,
@@ -168,7 +168,7 @@ class App extends Component {
     });
   }
 
-  setMousePointsX(startPointX, endPointX) {
+  setMousePointsX = (startPointX, endPointX) => {
     this.setState({
       mousePointsX: {
         start: startPointX,
@@ -177,7 +177,7 @@ class App extends Component {
     });
   }
 
-  determineSwipeDirection() {
+  determineSwipeDirection = () => {
     const { mousePointsX } = this.state;
     const { start: startPointX, end: endPointX } = mousePointsX;
 
@@ -200,15 +200,27 @@ class App extends Component {
     return direction;
   }
 
-  handleMouseDown = (e) => {
-    const { clientX: startPointX } = e;
+  canChangeSlide = (direction) => {
+    const { selectedSlide, isSliderAnimated } = this.state;
+
+    if (isSliderAnimated) {
+      return false;
+    }
+
+    if (direction === 'prev' && selectedSlide === 1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  swipeStart = (startPointX) => {
     this.setMousePointsX(startPointX, null);
   }
 
-  handleMouseMove = (e) => {
+  swipeMove = (endPointX) => {
     const { mousePointsX } = this.state;
     const { start: startPointX } = mousePointsX;
-    const { clientX: endPointX } = e;
  
     if (!startPointX) {
       return false;
@@ -217,7 +229,7 @@ class App extends Component {
     this.setMousePointsX(startPointX, endPointX);
   }
 
-  handleMouseUp = () => {
+  swipeEnd = () => {
     const swipeDirection = this.determineSwipeDirection();
 
     if (!swipeDirection) {
@@ -238,18 +250,24 @@ class App extends Component {
     this.setMousePointsX(null, null);
   }
 
-  canChangeSlide(direction) {
-    const { selectedSlide, isSliderAnimated } = this.state;
+  handleMouseDown = (e) => {
+    const { clientX: startPointX } = e;
+    this.swipeStart(startPointX);
+  }
 
-    if (isSliderAnimated) {
-      return false;
-    }
+  handleTouchStart = (e) => {
+    const { clientX: startPointX } = e.touches[0];
+    this.swipeStart(startPointX);
+  }
 
-    if (direction === 'prev' && selectedSlide === 1) {
-      return false;
-    }
+  handleMouseMove = (e) => {
+    const { clientX: endPointX } = e;
+    this.swipeMove(endPointX);
+  }
 
-    return true;
+  handleTouchMove = (e) => {
+    const { clientX: endPointX } = e.touches[0];
+    this.swipeMove(endPointX);
   }
 
   render() {
@@ -276,7 +294,10 @@ class App extends Component {
             onClick={this.handleControlBtnClick}
             onMouseDown={this.handleMouseDown}
             onMouseMove={this.handleMouseMove}
-            onMouseUp={this.handleMouseUp}
+            onMouseUp={this.swipeEnd}
+            onTouchStart={this.handleTouchStart}
+            onTouchMove={this.handleTouchMove}
+            onTouchEnd={this.swipeEnd}
           />
         }
         {alertText && <Alert text={alertText} variant={alertVariant} />}

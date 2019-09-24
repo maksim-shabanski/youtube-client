@@ -3,7 +3,7 @@ import Card from '../Card';
 import { ANIMATION_DURATION, TOTAL_CARDS_ON_SLIDES, CARD_WIDTH } from '../../utilities/constants';
 import './slider.scss';
 
-const Slider = ({ videosData, selectedSlide, onClick, onMouseDown, onMouseMove, onMouseUp }) => {
+const Slider = ({ videosData, selectedSlide, onClick, onMouseDown, onMouseMove, onMouseUp, onTouchStart, onTouchMove, onTouchEnd }) => {
 
   if (videosData.length === 0) {
     return null;
@@ -26,6 +26,9 @@ const Slider = ({ videosData, selectedSlide, onClick, onMouseDown, onMouseMove, 
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         {videosData.map((data) => (
           <Card key={data.id} data={data} />
