@@ -3,7 +3,7 @@ import Card from '../Card';
 import { ANIMATION_DURATION, TOTAL_CARDS_ON_SLIDES, CARD_WIDTH } from '../../utilities/constants';
 import './slider.scss';
 
-const Slider = ({ videosData, selectedSlide, onClick }) => {
+const Slider = ({ videosData, selectedSlide, onClick, onMouseDown, onMouseMove, onMouseUp }) => {
 
   if (videosData.length === 0) {
     return null;
@@ -21,14 +21,19 @@ const Slider = ({ videosData, selectedSlide, onClick }) => {
 
   return (
     <div className="slider">
-      <div className="slider__track" style={sliderTrackStyles}>
+      <div 
+        className="slider__track" style={sliderTrackStyles}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+      >
         {videosData.map((data) => (
           <Card key={data.id} data={data} />
         ))}
       </div>
       <div className="slider__controls">
         <button
-          data-btn="prev"
+          data-direction="prev"
           className="slider__btn"
           disabled={disabledPrevBtn}
           onClick={onClick}
@@ -37,7 +42,7 @@ const Slider = ({ videosData, selectedSlide, onClick }) => {
         </button>
         <span className="slider__current-page">{selectedSlide}</span>
         <button
-          data-btn="next"
+          data-direction="next"
           className="slider__btn"
           disabled={disabledNextBtn}
           onClick={onClick}

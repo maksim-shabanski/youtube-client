@@ -21,20 +21,24 @@ class App extends Component {
     maxVideoResults: 16,
     nextPageToken: '',
     selectedSlide: 1,
-    isAnimated: false,
+    isSliderAnimated: false,
+    mousePointsX: {
+      start: null,
+      end: null,
+    },
     videosData: [],
   }
 
   turnAnimatedOff() {
     setTimeout(() => {
-      this.setState({ isAnimated: false });
+      this.setState({ isSliderAnimated: false });
     }, ANIMATION_DURATION);
   }
 
-  changeSlide(btn) {
+  changeSlide(direction) {
     let { selectedSlide } = this.state;
 
-    if (btn === 'next') {
+    if (direction === 'next') {
       selectedSlide += 1;
     } else {
       selectedSlide -= 1;
@@ -42,7 +46,7 @@ class App extends Component {
     
     this.setState({
       selectedSlide,
-      isAnimated: true,
+      isSliderAnimated: true,
     }, () => {
       if (this.isNeedToLoadCards()) {
         this.getVideosData();
@@ -66,15 +70,14 @@ class App extends Component {
     return false;
   }
 
-  handleSliderBtnClick = (e) => {
-    const { btn } = e.target.dataset;
-    const { isAnimated } = this.state;
+  handleControlBtnClick = (e) => {
+    const { direction } = e.target.dataset;
 
-    if (isAnimated) {
-      return null;
+    if (!this.canChangeSlide(direction)) {
+      return false;
     }
 
-    this.changeSlide(btn);
+    this.changeSlide(direction);
   }
 
   handleSearchTextChange = ({ target: { value } }) => {
@@ -90,11 +93,11 @@ class App extends Component {
     const lastSearchText = history[history.length - 1] || '';
 
     if (searchText === '') {
-      return null;
+      return false;
     }
 
     if (lastSearchText === searchText) {
-      return null;
+      return false;
     }
 
     history.push(searchText);
@@ -165,6 +168,90 @@ class App extends Component {
     });
   }
 
+  setMousePointsX(startPointX, endPointX) {
+    this.setState({
+      mousePointsX: {
+        start: startPointX,
+        end: endPointX,
+      },
+    });
+  }
+
+  determineSwipeDirection() {
+    const { mousePointsX } = this.state;
+    const { start: startPointX, end: endPointX } = mousePointsX;
+
+    if (!startPointX || !endPointX) {
+      return false;
+    }
+
+    const diff = startPointX - endPointX;
+
+    if (diff === 0) {
+      return false;
+    }
+
+    let direction = 'left';
+
+    if (diff < 0) {
+      direction = 'right'
+    }
+
+    return direction;
+  }
+
+  handleMouseDown = (e) => {
+    const { clientX: startPointX } = e;
+    this.setMousePointsX(startPointX, null);
+  }
+
+  handleMouseMove = (e) => {
+    const { mousePointsX } = this.state;
+    const { start: startPointX } = mousePointsX;
+    const { clientX: endPointX } = e;
+ 
+    if (!startPointX) {
+      return false;
+    }
+
+    this.setMousePointsX(startPointX, endPointX);
+  }
+
+  handleMouseUp = () => {
+    const swipeDirection = this.determineSwipeDirection();
+
+    if (!swipeDirection) {
+      return false;
+    }
+
+    let direction = 'next';
+
+    if (swipeDirection === 'right') {
+      direction = 'prev';
+    }
+
+    if (!this.canChangeSlide(direction)) {
+      return false;
+    }
+
+    this.changeSlide(direction);
+    this.setMousePointsX(null, null);
+  }
+
+  canChangeSlide(direction) {
+    const { selectedSlide, isSliderAnimated } = this.state;
+
+    if (isSliderAnimated) {
+      return false;
+    }
+
+    if (direction === 'prev' && selectedSlide === 1) {
+      return false;
+    }
+
+    return true;
+  }
+
   render() {
     const {
       searchText,
@@ -173,7 +260,7 @@ class App extends Component {
       videosData,
       selectedSlide,
     } = this.state;
-    const { text: alertText, variant: alertVariant } = alert;
+    const {text: alertText, variant: alertVariant } = alert;
 
     return (
       <main className="wrapper">
@@ -186,7 +273,10 @@ class App extends Component {
           <Slider 
             videosData={videosData}
             selectedSlide={selectedSlide}
-            onClick={this.handleSliderBtnClick}
+            onClick={this.handleControlBtnClick}
+            onMouseDown={this.handleMouseDown}
+            onMouseMove={this.handleMouseMove}
+            onMouseUp={this.handleMouseUp}
           />
         }
         {alertText && <Alert text={alertText} variant={alertVariant} />}
