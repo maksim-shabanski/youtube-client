@@ -4,7 +4,7 @@ import Alert from '../../components/Alert';
 import Loader from '../../components/Loader';
 import Slider from '../../components/Slider';
 import YouTubeAPI from '../../services/youtubeAPI';
-import { ANIMATION_DURATION, TOTAL_CARDS_ON_SLIDES } from '../../utilities/constants';
+import { ANIMATION_DURATION } from '../../utilities/constants';
 import './app.scss';
 
 const youTubeAPI = new YouTubeAPI();
@@ -21,6 +21,8 @@ class App extends Component {
     maxVideoResults: 16,
     nextPageToken: '',
     selectedSlide: 1,
+    totalCardsOnSlide: this.getTotalCardsOnSlide(),
+    numberFirstCardOnSelectedSlide: 1,
     isSliderAnimated: false,
     mousePointsX: {
       start: null,
@@ -29,6 +31,53 @@ class App extends Component {
     videosData: [],
   }
 
+  componentDidMount() {
+    window.addEventListener('resize', this.handleResizeWindow);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResizeWindow);
+  }
+
+  handleResizeWindow = (e) => {
+    const { totalCardsOnSlide, numberFirstCardOnSelectedSlide } = this.state;
+    const { innerWidth: pageWidth } = e.currentTarget;
+    const newTotalCardsOnSlide = this.computeTotalCardsOnSlide(pageWidth);
+
+    if (totalCardsOnSlide === newTotalCardsOnSlide) {
+      return false;
+    }
+
+    const selectedSlide = Math.ceil(numberFirstCardOnSelectedSlide / newTotalCardsOnSlide);
+
+    this.setState({
+      selectedSlide,
+      totalCardsOnSlide: newTotalCardsOnSlide,
+    });
+  }
+
+  getTotalCardsOnSlide() {
+    const { innerWidth: pageWidth } = window;
+    const totalCardsOnSlide = this.computeTotalCardsOnSlide(pageWidth);
+    return totalCardsOnSlide;
+  }
+
+  computeTotalCardsOnSlide(pageWidth) {
+    let totalCardsOnSlide = 0;
+
+    if (pageWidth >= 1280) {
+      totalCardsOnSlide = 4;
+    } else if (pageWidth >= 940 && pageWidth < 1280) {
+      totalCardsOnSlide = 3;
+    } else if (pageWidth >= 640 && pageWidth < 940) {
+      totalCardsOnSlide = 2;
+    } else {
+      totalCardsOnSlide = 1;
+    }
+
+    return totalCardsOnSlide;
+  } 
+
   turnAnimatedOff = () => {
     setTimeout(() => {
       this.setState({ isSliderAnimated: false });
@@ -36,6 +85,7 @@ class App extends Component {
   }
 
   changeSlide = (direction) => {
+    const { totalCardsOnSlide } = this.state;
     let { selectedSlide } = this.state;
 
     if (direction === 'next') {
@@ -43,9 +93,12 @@ class App extends Component {
     } else {
       selectedSlide -= 1;
     }
+
+    const numberFirstCardOnSelectedSlide = totalCardsOnSlide * (selectedSlide - 1) + 1;
     
     this.setState({
       selectedSlide,
+      numberFirstCardOnSelectedSlide,
       isSliderAnimated: true,
     }, () => {
       if (this.isNeedToLoadCards()) {
@@ -57,9 +110,9 @@ class App extends Component {
   }
 
   isNeedToLoadCards = () => {
-    const { selectedSlide, videosData } = this.state;
+    const { selectedSlide, videosData, totalCardsOnSlide } = this.state;
     const numberCards = videosData.length;
-    const numberSlides = numberCards / TOTAL_CARDS_ON_SLIDES;
+    const numberSlides = numberCards / totalCardsOnSlide;
 
     // TODO: need to consider a case when we reached the last slide and prohibit switch a slide ahead
     
@@ -277,6 +330,7 @@ class App extends Component {
       isLoading,
       videosData,
       selectedSlide,
+      totalCardsOnSlide,
     } = this.state;
     const {text: alertText, variant: alertVariant } = alert;
 
@@ -291,6 +345,7 @@ class App extends Component {
           <Slider 
             videosData={videosData}
             selectedSlide={selectedSlide}
+            totalCardsOnSlide={totalCardsOnSlide}
             onClick={this.handleControlBtnClick}
             onMouseDown={this.handleMouseDown}
             onMouseMove={this.handleMouseMove}

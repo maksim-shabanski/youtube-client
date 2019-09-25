@@ -1,23 +1,23 @@
 import React from 'react';
 import Card from '../Card';
-import { ANIMATION_DURATION, TOTAL_CARDS_ON_SLIDES, CARD_WIDTH } from '../../utilities/constants';
+import { ANIMATION_DURATION, CARD_WIDTH } from '../../utilities/constants';
 import './slider.scss';
 
-const Slider = ({ videosData, selectedSlide, onClick, onMouseDown, onMouseMove, onMouseUp, onTouchStart, onTouchMove, onTouchEnd }) => {
+const Slider = ({ videosData, selectedSlide, totalCardsOnSlide, onClick, onMouseDown, onMouseMove, onMouseUp, onTouchStart, onTouchMove, onTouchEnd }) => {
 
   if (videosData.length === 0) {
     return null;
   }
 
   const sliderWidth = videosData.length * CARD_WIDTH;
-  const scrollPos = (selectedSlide - 1) * CARD_WIDTH * TOTAL_CARDS_ON_SLIDES;
+  const scrollPos = (selectedSlide - 1) * CARD_WIDTH * totalCardsOnSlide;
   const sliderTrackStyles = {
     width: `${sliderWidth}px`,
     transition: `transform ${ANIMATION_DURATION}ms ease-in-out 0s`,
     transform: `translate3d(-${scrollPos}px, 0px, 0px)`,
   };
   const disabledPrevBtn = selectedSlide === 1 ? true : false;
-  const disabledNextBtn = videosData.length < TOTAL_CARDS_ON_SLIDES ? true : false;
+  const disabledNextBtn = videosData.length < totalCardsOnSlide ? true : false;
 
   return (
     <div className="slider">
