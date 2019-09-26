@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/youtube-client/static/css/main.1d07291f.chunk.css",
+    "main.js": "/youtube-client/static/js/main.f8e9ab29.chunk.js",
+    "main.js.map": "/youtube-client/static/js/main.f8e9ab29.chunk.js.map",
+    "runtime~main.js": "/youtube-client/static/js/runtime~main.77238eec.js",
+    "runtime~main.js.map": "/youtube-client/static/js/runtime~main.77238eec.js.map",
+    "static/js/2.ca490870.chunk.js": "/youtube-client/static/js/2.ca490870.chunk.js",
+    "static/js/2.ca490870.chunk.js.map": "/youtube-client/static/js/2.ca490870.chunk.js.map",
+    "index.html": "/youtube-client/index.html",
+    "precache-manifest.a36efc4a388a291f27ba6c21bb9bb850.js": "/youtube-client/precache-manifest.a36efc4a388a291f27ba6c21bb9bb850.js",
+    "service-worker.js": "/youtube-client/service-worker.js",
+    "static/css/main.1d07291f.chunk.css.map": "/youtube-client/static/css/main.1d07291f.chunk.css.map"
+  }
+}
