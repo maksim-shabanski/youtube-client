@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import shrinkNumber from '../../utilities/shrinkNumber';
+import shrinkNumber from 'utilities/shrinkNumber';
 import './card.scss';
 
 const VIDEO_PATH = 'https://www.youtube.com/watch?v=';

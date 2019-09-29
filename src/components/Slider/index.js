@@ -1,6 +1,6 @@
 import React from 'react';
-import Card from '../Card';
-import { ANIMATION_DURATION, CARD_WIDTH } from '../../utilities/constants';
+import Card from 'components/Card';
+import { ANIMATION_DURATION, CARD_WIDTH } from 'utilities/constants';
 import './slider.scss';
 
 const Slider = ({ videosData, selectedSlide, totalCardsOnSlide, onClick, onMouseDown, onMouseMove, onMouseUp, onTouchStart, onTouchMove, onTouchEnd }) => {
