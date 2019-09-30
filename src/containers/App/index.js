@@ -108,14 +108,16 @@ class App extends Component {
     this.turnAnimatedOff();
   }
 
-  isNeedToLoadCards = () => {
-    const { selectedSlide, videosData, totalCardsOnSlide } = this.state;
-    const numberCards = videosData.length;
-    const numberSlides = numberCards / totalCardsOnSlide;
+  computeTotalSlides() {
+    const { videosData, totalCardsOnSlide } = this.state;
+    return Math.ceil(videosData.length / totalCardsOnSlide);
+  }
 
-    // TODO: need to consider a case when we reached the last slide and prohibit switch a slide ahead
+  isNeedToLoadCards = () => {
+    const { selectedSlide } = this.state;
+    const totalSlides = this.computeTotalSlides();
     
-    if (selectedSlide >= numberSlides - 3) {
+    if (selectedSlide >= totalSlides - 3) {
       return true;
     }
 
@@ -244,12 +246,17 @@ class App extends Component {
 
   canChangeSlide = (direction) => {
     const { selectedSlide, isSliderAnimated } = this.state;
+    const totalSlides = this.computeTotalSlides();
 
     if (isSliderAnimated) {
       return false;
     }
 
     if (direction === 'prev' && selectedSlide === 1) {
+      return false;
+    }
+
+    if (direction === 'next' && totalSlides === selectedSlide) {
       return false;
     }
 
