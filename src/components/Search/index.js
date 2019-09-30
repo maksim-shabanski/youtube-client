@@ -14,7 +14,7 @@ const Search = ({ searchText, onChange, onSubmit }) => (
         placeholder="Type keywords to find video"
         autoFocus
       />
-      <Button variant="grey">Find</Button>
+      <Button type="grey">Find</Button>
     </form>
   </div>
 );
