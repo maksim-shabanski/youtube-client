@@ -11,7 +11,6 @@ const youTubeAPI = new YouTubeAPI();
    
 class App extends Component {
   state = {
-    history: [],
     searchText: '',
     alert: {
       text: 'You haven\'t searched anything yet.',
@@ -142,31 +141,24 @@ class App extends Component {
   handleSubmitForm = (e) => {
     e.preventDefault();
 
-    const { history, searchText } = this.state;
-    const lastSearchText = history[history.length - 1] || '';
+    const { searchText } = this.state;
 
     if (searchText === '') {
       return false;
     }
 
-    if (lastSearchText === searchText) {
-      return false;
-    }
-
-    history.push(searchText);
-
     this.setState({
-      history,
       selectedSlide: 1,
       videosData: [],
+      nextPageToken: '',
       alert: {
         text: '',
         variant: '',
       },
       isLoading: true, 
+    }, () => {
+      this.getVideosData();
     });
-
-    this.getVideosData();
   }
 
   async getVideosData() {
@@ -195,7 +187,7 @@ class App extends Component {
       ({ id: { videoId } }) => videoId
     );
 
-    this.setNextPageToken(nextPageToken);
+    this.setState({ nextPageToken });
     return id;
   }
 
@@ -207,10 +199,6 @@ class App extends Component {
       },
       isLoading: false,
     })
-  }
-
-  setNextPageToken = (nextPageToken) => {
-    this.setState({ nextPageToken });
   }
 
   setVideosData = (nextVideosData) => {
