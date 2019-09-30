@@ -14,7 +14,7 @@ class App extends Component {
     searchText: '',
     alert: {
       text: 'You haven\'t searched anything yet.',
-      variant: '',
+      type: '',
     },
     isLoading: false,
     maxVideoResults: 16,
@@ -153,7 +153,7 @@ class App extends Component {
       nextPageToken: '',
       alert: {
         text: '',
-        variant: '',
+        type: '',
       },
       isLoading: true, 
     }, () => {
@@ -167,15 +167,19 @@ class App extends Component {
       const { items: videosData } = await youTubeAPI.fetchVideosData(id);
 
       if (videosData.length === 0) {
-        const alertText = 'We are so sorry! We couldn\'t find any video for your request.';
-        this.setAlertOption(alertText);
+        this.updateAlertState({
+          type: 'warning',
+          text: 'We are so sorry! We couldn\'t find any video for your request.',
+        });
       } else {
         this.setVideosData(videosData);
       }
     } catch(error) {
       // TODO: don't show error when we created a slider and other videos don't download
-      const alertText = 'Something was wrong! Check your network connection and try searching again.';
-      this.setAlertOption(alertText);
+      this.updateAlertState({
+        type: 'warning',
+        text: 'Something was wrong! Check your network connection and try searching again.',
+      });
     }
   }
 
@@ -191,12 +195,9 @@ class App extends Component {
     return id;
   }
 
-  setAlertOption = (text) => {
+  updateAlertState = (alert) => {
     this.setState({
-      alert: {
-        text,
-        variant: 'warning',
-      },
+      alert,
       isLoading: false,
     })
   }
@@ -320,7 +321,6 @@ class App extends Component {
       selectedSlide,
       totalCardsOnSlide,
     } = this.state;
-    const {text: alertText, variant: alertVariant } = alert;
 
     return (
       <main className="wrapper">
@@ -343,7 +343,7 @@ class App extends Component {
             onTouchEnd={this.swipeEnd}
           />
         }
-        {alertText && <Alert text={alertText} variant={alertVariant} />}
+        {alert.text && <Alert options={alert} />}
         {isLoading && <Loader />}
       </main>
     );
