@@ -38,10 +38,9 @@ class App extends Component {
     window.removeEventListener('resize', this.handleResizeWindow);
   }
 
-  handleResizeWindow = (e) => {
+  handleResizeWindow = () => {
     const { totalCardsOnSlide, numberFirstCardOnSelectedSlide } = this.state;
-    const { innerWidth: pageWidth } = e.currentTarget;
-    const newTotalCardsOnSlide = this.computeTotalCardsOnSlide(pageWidth);
+    const newTotalCardsOnSlide = this.getTotalCardsOnSlide();
 
     if (totalCardsOnSlide === newTotalCardsOnSlide) {
       return false;
@@ -53,85 +52,6 @@ class App extends Component {
       selectedSlide,
       totalCardsOnSlide: newTotalCardsOnSlide,
     });
-  }
-
-  getTotalCardsOnSlide() {
-    const { innerWidth: pageWidth } = window;
-    const totalCardsOnSlide = this.computeTotalCardsOnSlide(pageWidth);
-    return totalCardsOnSlide;
-  }
-
-  computeTotalCardsOnSlide(pageWidth) {
-    let totalCardsOnSlide = 0;
-
-    if (pageWidth >= 1280) {
-      totalCardsOnSlide = 4;
-    } else if (pageWidth >= 940 && pageWidth < 1280) {
-      totalCardsOnSlide = 3;
-    } else if (pageWidth >= 640 && pageWidth < 940) {
-      totalCardsOnSlide = 2;
-    } else {
-      totalCardsOnSlide = 1;
-    }
-
-    return totalCardsOnSlide;
-  } 
-
-  turnAnimatedOff = () => {
-    setTimeout(() => {
-      this.setState({ isSliderAnimated: false });
-    }, ANIMATION_DURATION);
-  }
-
-  changeSlide = (direction) => {
-    const { totalCardsOnSlide } = this.state;
-    let { selectedSlide } = this.state;
-
-    if (direction === 'next') {
-      selectedSlide += 1;
-    } else {
-      selectedSlide -= 1;
-    }
-
-    const numberFirstCardOnSelectedSlide = totalCardsOnSlide * (selectedSlide - 1) + 1;
-    
-    this.setState({
-      selectedSlide,
-      numberFirstCardOnSelectedSlide,
-      isSliderAnimated: true,
-    }, () => {
-      if (this.isNeedToLoadCards()) {
-        this.getVideosData();
-      }
-    });
-
-    this.turnAnimatedOff();
-  }
-
-  computeTotalSlides() {
-    const { videosData, totalCardsOnSlide } = this.state;
-    return Math.ceil(videosData.length / totalCardsOnSlide);
-  }
-
-  isNeedToLoadCards = () => {
-    const { selectedSlide } = this.state;
-    const totalSlides = this.computeTotalSlides();
-    
-    if (selectedSlide >= totalSlides - 3) {
-      return true;
-    }
-
-    return false;
-  }
-
-  handleControlBtnClick = (e) => {
-    const { direction } = e.target.dataset;
-
-    if (!this.canChangeSlide(direction)) {
-      return false;
-    }
-
-    this.changeSlide(direction);
   }
 
   handleSearchTextChange = ({ target: { value } }) => {
@@ -163,65 +83,119 @@ class App extends Component {
     });
   }
 
-  async getVideosData() {
-    try {
-      const id = await this.getVideosId();
-      const { items: videosData } = await youTubeAPI.fetchVideosData(id);
+  handleControlBtnClick = (e) => {
+    const { direction } = e.target.dataset;
 
-      if (videosData.length === 0) {
-        this.updateAlertState({
-          type: 'warning',
-          text: 'We are so sorry! We couldn\'t find any video for your request.',
-        });
-      } else {
-        this.setVideosData(videosData);
-      }
-    } catch(error) {
-      // TODO: don't show error when we created a slider and other videos don't download
-      this.updateAlertState({
-        type: 'warning',
-        text: 'Something was wrong! Check your network connection and try searching again.',
-      });
+    if (!this.canChangeSlide(direction)) {
+      return false;
     }
+
+    this.handleSlideChange(direction);
   }
 
-  async getVideosId() {
-    const { searchText, nextPageToken: pageToken, maxVideoResults } = this.state;
-    const data = await youTubeAPI.fetchVideosId(searchText, pageToken, maxVideoResults);
-    const { nextPageToken, items } = data;
-    const id = items.map(
-      ({ id: { videoId } }) => videoId
-    );
-
-    this.setState({ nextPageToken });
-    return id;
+  handleMouseDown = (e) => {
+    const { clientX: startPointX } = e;
+    this.handleSwipeStart(startPointX);
   }
 
-  updateAlertState = (alert) => {
+  handleTouchStart = (e) => {
+    const { clientX: startPointX } = e.touches[0];
+    this.handleSwipeStart(startPointX);
+  }
+
+  handleMouseMove = (e) => {
+    const { clientX: endPointX } = e;
+    this.handleSwipeMove(endPointX);
+  }
+
+  handleTouchMove = (e) => {
+    const { clientX: endPointX } = e.touches[0];
+    this.handleSwipeMove(endPointX);
+  }
+
+  handleSwipeStart = (startPointX) => {
+    this.updateMousePointsState(startPointX, null);
+  }
+
+  handleSwipeMove = (endPointX) => {
+    const { mousePointsX } = this.state;
+    const { start: startPointX } = mousePointsX;
+ 
+    if (!startPointX) {
+      return false;
+    }
+
+    this.updateMousePointsState(startPointX, endPointX);
+  }
+
+  handleSwipeEnd = () => {
+    const swipeDirection = this.getSwipeDirection();
+
+    if (!swipeDirection) {
+      return false;
+    }
+
+    let direction = 'next';
+
+    if (swipeDirection === 'right') {
+      direction = 'prev';
+    }
+
+    if (!this.canChangeSlide(direction)) {
+      return false;
+    }
+
+    this.handleSlideChange(direction);
+    this.updateMousePointsState(null, null);
+  }
+
+  handleSlideChange = (direction) => {
+    const { totalCardsOnSlide } = this.state;
+    let { selectedSlide, numberFirstCardOnSelectedSlide } = this.state;
+
+    if (direction === 'next') {
+      selectedSlide += 1;
+    } else {
+      selectedSlide -= 1;
+    }
+
+    numberFirstCardOnSelectedSlide += totalCardsOnSlide;
+    
     this.setState({
-      alert,
-      isLoading: false,
-    })
-  }
-
-  setVideosData = (nextVideosData) => {
-    const { videosData } = this.state;
-    this.setState({
-      isLoading: false,
-      videosData: videosData.concat(nextVideosData)
+      selectedSlide,
+      numberFirstCardOnSelectedSlide,
+      isSliderAnimated: true,
+    }, () => {
+      if (this.isNeedToLoadCards()) {
+        this.getVideosData();
+      }
+      this.updateSliderAnimatedState();
     });
   }
 
-  setMousePointsX = (startPointX, endPointX) => {
-    this.setState({
-      mousePointsX: {
-        start: startPointX,
-        end: endPointX,
-      },
-    });
+  getTotalSlides() {
+    const { videosData, totalCardsOnSlide } = this.state;
+    return Math.ceil(videosData.length / totalCardsOnSlide);
   }
 
-  determineSwipeDirection = () => {
+  getTotalCardsOnSlide() {
+    const { innerWidth } = window;
+    let totalCardsOnSlide = 0;
+
+    if (innerWidth >= 1280) {
+      totalCardsOnSlide = 4;
+    } else if (innerWidth >= 940 && innerWidth < 1280) {
+      totalCardsOnSlide = 3;
+    } else if (innerWidth >= 640 && innerWidth < 940) {
+      totalCardsOnSlide = 2;
+    } else {
+      totalCardsOnSlide = 1;
+    }
+
+    return totalCardsOnSlide;
+  }
+
+  getSwipeDirection() {
     const { mousePointsX } = this.state;
     const { start: startPointX, end: endPointX } = mousePointsX;
 
@@ -244,9 +218,77 @@ class App extends Component {
     return direction;
   }
 
+  getVideosData = async () => {
+    try {
+      const id = await this.getVideosId();
+      const { items: videosData } = await youTubeAPI.fetchVideosData(id);
+
+      if (videosData.length === 0) {
+        this.updateAlertState({
+          type: 'warning',
+          text: 'We are so sorry! We couldn\'t find any video for your request.',
+        });
+      } else {
+        this.updateVideosDataState(videosData);
+      }
+    } catch(error) {
+      // TODO: don't show error when we created a slider and other videos don't download
+      this.updateAlertState({
+        type: 'warning',
+        text: 'Something was wrong! Check your network connection and try searching again.',
+      });
+    }
+  }
+
+  getVideosId = async () => {
+    const { searchText, nextPageToken: pageToken, maxVideoResults } = this.state;
+    const data = await youTubeAPI.fetchVideosId(searchText, pageToken, maxVideoResults);
+    const { nextPageToken, items } = data;
+    const id = items.map(
+      ({ id: { videoId } }) => videoId
+    );
+
+    this.setState({ nextPageToken });
+    return id;
+  }
+
+  updateSliderAnimatedState = () => {
+    const { isSliderAnimated } = this.state;
+    
+    window.setTimeout(() => {
+      this.setState({
+        isSliderAnimated: !isSliderAnimated,
+      });
+    }, ANIMATION_DURATION);
+  }
+
+  updateAlertState = (alert) => {
+    this.setState({
+      alert,
+      isLoading: false,
+    })
+  }
+
+  updateVideosDataState = (nextVideosData) => {
+    const { videosData } = this.state;
+    this.setState({
+      isLoading: false,
+      videosData: videosData.concat(nextVideosData)
+    });
+  }
+
+  updateMousePointsState = (startPointX, endPointX) => {
+    this.setState({
+      mousePointsX: {
+        start: startPointX,
+        end: endPointX,
+      },
+    });
+  }
+
   canChangeSlide = (direction) => {
     const { selectedSlide, isSliderAnimated } = this.state;
-    const totalSlides = this.computeTotalSlides();
+    const totalSlides = this.getTotalSlides();
 
     if (isSliderAnimated) {
       return false;
@@ -263,60 +305,15 @@ class App extends Component {
     return true;
   }
 
-  swipeStart = (startPointX) => {
-    this.setMousePointsX(startPointX, null);
-  }
-
-  swipeMove = (endPointX) => {
-    const { mousePointsX } = this.state;
-    const { start: startPointX } = mousePointsX;
- 
-    if (!startPointX) {
-      return false;
+  isNeedToLoadCards = () => {
+    const { selectedSlide } = this.state;
+    const totalSlides = this.getTotalSlides();
+    
+    if (selectedSlide >= totalSlides - 3) {
+      return true;
     }
 
-    this.setMousePointsX(startPointX, endPointX);
-  }
-
-  swipeEnd = () => {
-    const swipeDirection = this.determineSwipeDirection();
-
-    if (!swipeDirection) {
-      return false;
-    }
-
-    let direction = 'next';
-
-    if (swipeDirection === 'right') {
-      direction = 'prev';
-    }
-
-    if (!this.canChangeSlide(direction)) {
-      return false;
-    }
-
-    this.changeSlide(direction);
-    this.setMousePointsX(null, null);
-  }
-
-  handleMouseDown = (e) => {
-    const { clientX: startPointX } = e;
-    this.swipeStart(startPointX);
-  }
-
-  handleTouchStart = (e) => {
-    const { clientX: startPointX } = e.touches[0];
-    this.swipeStart(startPointX);
-  }
-
-  handleMouseMove = (e) => {
-    const { clientX: endPointX } = e;
-    this.swipeMove(endPointX);
-  }
-
-  handleTouchMove = (e) => {
-    const { clientX: endPointX } = e.touches[0];
-    this.swipeMove(endPointX);
+    return false;
   }
 
   render() {
@@ -344,10 +341,10 @@ class App extends Component {
             onClick={this.handleControlBtnClick}
             onMouseDown={this.handleMouseDown}
             onMouseMove={this.handleMouseMove}
-            onMouseUp={this.swipeEnd}
+            onMouseUp={this.handleSwipeEnd}
             onTouchStart={this.handleTouchStart}
             onTouchMove={this.handleTouchMove}
-            onTouchEnd={this.swipeEnd}
+            onTouchEnd={this.handleSwipeEnd}
           />
         }
         {alert.text && <Alert options={alert} />}
