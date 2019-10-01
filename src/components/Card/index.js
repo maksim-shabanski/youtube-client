@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import shrinkNumber from 'utilities/shrinkNumber';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import './card.scss';
+
+dayjs.extend(relativeTime);
 
 const VIDEO_PATH = 'https://www.youtube.com/watch?v=';
 const CHANNEL_PATH = 'https://www.youtube.com/channel/';
@@ -11,7 +15,6 @@ const Card = ({ data }) => {
   const { channelId, channelTitle, publishedAt, title, description, thumbnails } = snippet;
   const { high: { url: imageUrl } } = thumbnails;
   const { viewCount } = statistics;
-  const readableDate = new Date(publishedAt).toDateString().slice(4);
 
   return (
     <div className="card">
@@ -34,7 +37,7 @@ const Card = ({ data }) => {
           </header>
           <p className="card__desc">
             <time className="card__date" dateTime={publishedAt}>
-              {readableDate}
+              {dayjs().to(publishedAt)}
             </time> <br />
             {description}
           </p>
