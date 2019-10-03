@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Search from 'components/Search';
 import Alert from 'components/Alert';
-import Loader from 'components/Loader';
+import Spinner from 'components/Spinner';
 import Slider from 'components/Slider';
 import YouTubeAPI from 'services/youtubeAPI';
 import { ANIMATION_DURATION } from 'utilities/constants';
@@ -348,7 +348,7 @@ class App extends Component {
           />
         }
         {alert.text && <Alert options={alert} />}
-        {isLoading && <Loader />}
+        {isLoading && <Spinner variant="circle" />}
       </main>
     );
   }
