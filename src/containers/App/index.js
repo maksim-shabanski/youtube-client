@@ -84,7 +84,7 @@ class App extends Component {
   }
 
   handleControlBtnClick = (e) => {
-    const { direction } = e.target.dataset;
+    const { direction } = e.currentTarget.dataset;
 
     if (!this.canChangeSlide(direction)) {
       return false;
