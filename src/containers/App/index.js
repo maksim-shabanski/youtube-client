@@ -243,7 +243,7 @@ class App extends Component {
   getVideosId = async () => {
     const { searchText, nextPageToken: pageToken, maxVideoResults } = this.state;
     const data = await youTubeAPI.fetchVideosId(searchText, pageToken, maxVideoResults);
-    const { nextPageToken, items } = data;
+    const { nextPageToken = '', items } = data;
     const id = items.map(
       ({ id: { videoId } }) => videoId
     );
@@ -306,8 +306,12 @@ class App extends Component {
   }
 
   isNeedToLoadCards = () => {
-    const { selectedSlide } = this.state;
+    const { nextPageToken, selectedSlide } = this.state;
     const totalSlides = this.getTotalSlides();
+
+    if (!nextPageToken) {
+      return false;
+    }
     
     if (selectedSlide >= totalSlides - 3) {
       return true;
@@ -318,6 +322,7 @@ class App extends Component {
 
   render() {
     const {
+      nextPageToken,
       searchText,
       alert,
       isLoading,
@@ -325,6 +330,9 @@ class App extends Component {
       selectedSlide,
       totalCardsOnSlide,
     } = this.state;
+
+    const totalSlides = this.getTotalSlides();
+    const isExistMoreSlides = nextPageToken ? true : false;
 
     return (
       <main className="wrapper">
@@ -334,9 +342,11 @@ class App extends Component {
           onSubmit={this.handleSubmitForm}
         />
         {videosData.length !== 0 && 
-          <Slider 
+          <Slider
             videosData={videosData}
             selectedSlide={selectedSlide}
+            totalSlides={totalSlides}
+            isExistMoreSlides={isExistMoreSlides}
             totalCardsOnSlide={totalCardsOnSlide}
             onClick={this.handleControlBtnClick}
             onMouseDown={this.handleMouseDown}
