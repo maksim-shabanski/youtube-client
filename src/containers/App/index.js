@@ -151,7 +151,7 @@ class App extends Component {
 
   handleSlideChange = (direction) => {
     const { totalCardsOnSlide } = this.state;
-    let { selectedSlide, numberFirstCardOnSelectedSlide } = this.state;
+    let { selectedSlide } = this.state;
 
     if (direction === 'next') {
       selectedSlide += 1;
@@ -159,7 +159,7 @@ class App extends Component {
       selectedSlide -= 1;
     }
 
-    numberFirstCardOnSelectedSlide += totalCardsOnSlide;
+    const numberFirstCardOnSelectedSlide = (selectedSlide - 1) * totalCardsOnSlide + 1;
     
     this.setState({
       selectedSlide,
