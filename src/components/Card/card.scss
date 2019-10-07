@@ -1,45 +1,83 @@
 .card {
   display: flex;
   flex-direction: column;
-  width: 290px;
+  width: var(--cardWidth);
   margin: 0 10px;
 
-  &__content {
-    display: flex;
-    flex: 1 0 auto;
-    flex-direction: column;
-    padding: 20px;
-    border: var(--borderGrey);
-    border-top: 0;
-    border-radius: 0 0 2px 2px;
-  }
+  border: var(--borderGrey);
+  border-top: 0;
+  border-radius: var(--borderRadius);
 
-  &__heading {
-    height: 70px;
-    margin-bottom: 10px;
-    overflow: hidden;
-  }
+  --cardWidth: 290px;
 
-  &__details {
-    flex: 1 0 auto;
-    margin-bottom: 20px;
+  &__thumbnail {
+    width: var(--cardWidth);
+    height: 216px;
+    margin: 0 -1px;
+
+    background-color: #cccccc;
   }
 
   &__img {
     display: block;
     max-width: 100%;
     height: auto;
-    border-radius: 2px 2px 0 0;
+
+    border-radius: var(--borderRadius) var(--borderRadius) 0 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  &__metadata,
+  &__author {
+    margin-bottom: 8px;
+
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--gray);
+
+    a {
+      color: var(--gray);
+      text-decoration: none;
+
+      transition: color 0.15s ease-in-out;
+
+      &:hover {
+        color: var(--red);
+      }
+    }
+  }
+
+  &__author {
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__views {
+    &::after {
+      content: "•";
+
+      display: inline-block;
+      margin: 0 6px;
+    }
   }
 
   &__title {
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    max-height: 45px;
     margin-bottom: 2px;
     overflow: hidden;
 
-    font-size: 20px;
-    line-height: 24px;
+    font-size: 16px;
+    line-height: 22px;
     text-overflow: ellipsis;
 
     -webkit-line-clamp: 2;
@@ -50,50 +88,20 @@
     }
   }
 
-  &__author,
-  &__date {
-    margin-bottom: 1px;
-
-    font-size: 12px;
-    line-height: 20px;
-    color: var(--gray);
-  }
-
-  &__author {
-    a {
-      color: var(--gray);
-      text-decoration: none;
-
-      transition: color 0.15s ease-in-out;
-
-      &:hover {
-        color: var(--redHover);
-      }
-    }
-  }
-
   &__desc {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    height: 130px;
-    overflow: hidden;
+    flex-grow: 1;
+    margin-bottom: 20px;
 
-    font-size: 14px;
-    word-break: break-word;
+    p {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
 
-    -webkit-line-clamp: 7;
-  }
+      font-size: 14px;
+      text-overflow: ellipsis;
+      word-break: break-word;
 
-  &__footer {
-    display: flex;
-    align-items: center;
-  }
-
-  &__views {
-    margin-left: 10px;
-
-    font-size: 12px;
-    line-height: 20px;
-    color: var(--gray);
+      -webkit-line-clamp: 6;
+    }
   }
 }

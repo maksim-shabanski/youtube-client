@@ -76,8 +76,8 @@ const Slider = ({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {videosData.map((data) => (
-          <Card key={data.id} data={data} />
+        {videosData.map((videoData) => (
+          <Card key={videoData.id} videoData={videoData} />
         ))}
       </div>
       <div className="slider__controls">
