@@ -5,11 +5,11 @@ import './spinner.scss';
 const propTypes = {
   variant: PropTypes.string.isRequired,
   as: PropTypes.elementType,
-}
+};
 
 const defaultProps = {
   as: 'div',
-}
+};
 
 const Spinner = ({ variant, as: Component }) => {
   const prefix = 'spinner';
@@ -19,15 +19,19 @@ const Spinner = ({ variant, as: Component }) => {
   let bodySpinner = <span className={`${figureClassWithModifier}`} />;
 
   if (variant === 'bounce') {
-    bodySpinner =  (
+    bodySpinner = (
       <>
-        <span className={`${figureClassWithModifier} ${figureClass}--delay32`} />
-        <span className={`${figureClassWithModifier} ${figureClass}--delay16`} />
+        <span
+          className={`${figureClassWithModifier} ${figureClass}--delay32`}
+        />
+        <span
+          className={`${figureClassWithModifier} ${figureClass}--delay16`}
+        />
         <span className={`${figureClassWithModifier}`} />
       </>
     );
   }
-  
+
   return <Component className={prefix}>{bodySpinner}</Component>;
 };
 

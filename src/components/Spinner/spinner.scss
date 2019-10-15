@@ -1,77 +1,78 @@
 .spinner {
-  --spinnerWidth: 40px;
-  --spinnerHeight: 40px;
-  text-align: center;
+	--spinnerHeight: 40px;
+	--spinnerWidth: 40px;
 
+	text-align: center;
 
-  &__figure {
-    position: relative;
-    vertical-align: middle;
-    display: inline-block;
-    width: var(--spinnerWidth);
-    height: var(--spinnerHeight);
+	&__figure {
+		position: relative;
+		display: inline-block;
+		width: var(--spinnerWidth);
+		height: var(--spinnerHeight);
+		vertical-align: middle;
 
-    &--circle {
-      &::before,
-      &::after {
-        position: absolute;
-        content: '';
-        top: 0;
-        left: 0;
-        width: var(--spinnerWidth);
-        height: var(--spinnerHeight);
-        border-radius: 50%;
-      }
-  
-      &::before {
-        border: 3px solid rgba(0, 0, 0, 0.1);
-      }
-  
-      &::after {
-        animation: spinner-circle 0.6s linear;
-        animation-iteration-count: infinite;
-        border-color: var(--red) transparent transparent;
-        border-style: solid;
-        border-width: 3px;
-      }
-    }
+		&--circle {
+			&::before,
+			&::after {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: var(--spinnerWidth);
+				height: var(--spinnerHeight);
+				border-radius: 50%;
+				content: "";
+			}
 
-    &--bounce {
-      --spinnerWidth: 6px;
-      --spinnerHeight: 6px;
-     
-      background-color: var(--black);
-      border-radius: 100%;
-      margin: 0 2px;
-      animation: spinner-bounce 1.4s ease-in-out 0s infinite both;
-    }
+			&::before {
+				border: 3px solid rgba(0, 0, 0, .1);
+			}
 
-    &--delay32 {
-      animation-delay: -0.32s;
-    }
-  
-    &--delay16 {
-      animation-delay: -0.16s;
-    }
-  }
+			&::after {
+				border-width: 3px;
+				border-style: solid;
+				border-color: var(--red) transparent transparent;
+				animation: spinner-circle .6s linear;
+				animation-iteration-count: infinite;
+			}
+		}
+
+		&--bounce {
+			--spinnerHeight: 6px;
+			--spinnerWidth: 6px;
+
+			margin: 0 2px;
+			border-radius: 100%;
+			background-color: rgba(0, 0, 0, .2);
+			animation: spinner-bounce 1.4s ease-in-out 0s infinite both;
+		}
+
+		&--delay32 {
+			animation-delay: -.32s;
+		}
+
+		&--delay16 {
+			animation-delay: -.16s;
+		}
+	}
 }
 
 @keyframes spinner-circle {
-  from {
-    transform: rotate(0deg);
-  }
+	from {
+		transform: rotate(0deg);
+	}
 
-  to {
-    transform: rotate(360deg);
-  }
+	to {
+		transform: rotate(360deg);
+	}
 }
-
 @keyframes spinner-bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-  } 
-  
-  40% {
-    transform: scale(1.0);
-  }
+	0%,
+	80%,
+	100% {
+		transform: scale(0);
+	}
+
+	40% {
+		transform: scale(1);
+	}
 }
