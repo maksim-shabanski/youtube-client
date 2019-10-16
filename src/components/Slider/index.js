@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import Spinner from 'components/Spinner';
 import Card from 'components/Card';
 import { ANIMATION_DURATION, CARD_WIDTH } from 'utilities/constants';
@@ -48,25 +49,25 @@ const Slider = ({
   onTouchMove,
   onTouchEnd,
 }) => {
-
   const sliderWidth = videosData.length * CARD_WIDTH;
   const scrollPos = (selectedSlide - 1) * CARD_WIDTH * totalCardsOnSlide;
   const sliderTrackStyles = {
     width: `${sliderWidth}px`,
     transition: `transform ${ANIMATION_DURATION}ms ease-in-out 0s`,
-    transform: `translate3d(-${scrollPos}px, 0px, 0px)`,
+    transform: `translate3d(-${scrollPos}px, 0, 0)`,
   };
   const isDisabledPrevBtn = selectedSlide === 1;
   const isDisabledNextBtn = selectedSlide === totalSlides;
 
   let nextBtnCaption = 'Next';
-  if (isExistMoreSlides && selectedSlide === totalSlides ) {
+  if (isExistMoreSlides && selectedSlide === totalSlides) {
     nextBtnCaption = <Spinner variant="bounce" as="span" />;
   }
 
   return (
     <div className="slider">
-      <div 
+      <div
+        role="presentation"
         className="slider__track"
         style={sliderTrackStyles}
         onMouseDown={onMouseDown}
@@ -76,12 +77,13 @@ const Slider = ({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {videosData.map((videoData) => (
+        {videosData.map(videoData => (
           <Card key={videoData.id} videoData={videoData} />
         ))}
       </div>
       <div className="slider__controls">
         <button
+          type="button"
           data-direction="prev"
           className="slider__btn"
           disabled={isDisabledPrevBtn}
@@ -91,6 +93,7 @@ const Slider = ({
         </button>
         <span className="slider__current-page">{selectedSlide}</span>
         <button
+          type="button"
           data-direction="next"
           className="slider__btn"
           disabled={isDisabledNextBtn}
@@ -101,7 +104,7 @@ const Slider = ({
       </div>
     </div>
   );
-}
+};
 
 Slider.propTypes = propTypes;
 Slider.defaultProps = defaultProps;
