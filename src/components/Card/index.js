@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import shrinkNumber from 'utilities/shrinkNumber';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+
+import shrinkNumber from 'utilities/shrinkNumber';
 import './card.scss';
 
 dayjs.extend(relativeTime);
@@ -33,8 +34,17 @@ const propTypes = {
 
 const Card = ({ videoData }) => {
   const { id, snippet, statistics } = videoData;
-  const { channelId, channelTitle, publishedAt, title, description, thumbnails } = snippet;
-  const { high: { url: imageUrl } } = thumbnails;
+  const {
+    channelId,
+    channelTitle,
+    publishedAt,
+    title,
+    description,
+    thumbnails,
+  } = snippet;
+  const {
+    high: { url: imageUrl },
+  } = thumbnails;
   const { viewCount } = statistics;
   const oneLineDesc = description.replace(/[\n\t]/g, '');
 
@@ -47,10 +57,18 @@ const Card = ({ videoData }) => {
       </div>
       <div className="card__body">
         <div className="card__author">
-          <a href={`${CHANNEL_PATH}${channelId}`}>{channelTitle}</a>
+          <a href={`${CHANNEL_PATH}${channelId}`} className="card__author-link">
+            {channelTitle}
+          </a>
         </div>
         <h2 className="card__title">
-          <a href={`${VIDEO_PATH}${id}`} title={title}>{title}</a>
+          <a
+            href={`${VIDEO_PATH}${id}`}
+            className="card__title-link"
+            title={title}
+          >
+            {title}
+          </a>
         </h2>
         <div className="card__metadata">
           <span className="card__views">{shrinkNumber(viewCount)} views</span>
@@ -59,15 +77,15 @@ const Card = ({ videoData }) => {
           </time>
         </div>
         <div className="card__desc">
-          <p>
-            {oneLineDesc ? oneLineDesc : 'No description'}
-          </p>
+          <p>{oneLineDesc || 'No description'}</p>
         </div>
-        <a className="btn" href={`${VIDEO_PATH}${id}`}>Watch video</a>
+        <a className="btn" href={`${VIDEO_PATH}${id}`}>
+          Watch video
+        </a>
       </div>
     </div>
   );
-}
+};
 
 Card.propTypes = propTypes;
 
