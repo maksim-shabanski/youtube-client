@@ -23,5 +23,6 @@
         "ignore": ["after-comment"]
       }
     ]
-  }
+  },
+  "ignoreFiles": ["**/*.js"]
 }
