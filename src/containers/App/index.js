@@ -14,7 +14,7 @@ class App extends Component {
     searchText: '',
     alert: {
       text: "You haven't searched anything yet.",
-      variant: '',
+      variant: null,
     },
     isLoading: false,
     maxVideoResults: 16,
@@ -124,8 +124,8 @@ class App extends Component {
         videosData: [],
         nextPageToken: '',
         alert: {
-          text: '',
-          variant: '',
+          text: null,
+          variant: null,
         },
         isLoading: true,
       },

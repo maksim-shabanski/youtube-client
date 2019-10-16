@@ -7,12 +7,12 @@ import './alert.scss';
 const propTypes = {
   children: PropTypes.string.isRequired,
   as: PropTypes.elementType,
-  variant: PropTypes.string,
+  variant: PropTypes.oneOf(['warning', null]),
 };
 
 const defaultProps = {
   as: 'div',
-  variant: '',
+  variant: null,
 };
 
 const Alert = ({ as: Component, variant, children }) => {
