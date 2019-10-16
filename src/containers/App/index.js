@@ -8,19 +8,19 @@ import { ANIMATION_DURATION } from 'utilities/constants';
 import './app.scss';
 
 const youTubeAPI = new YouTubeAPI();
-   
+
 class App extends Component {
   state = {
     searchText: '',
     alert: {
-      text: 'You haven\'t searched anything yet.',
+      text: "You haven't searched anything yet.",
       type: '',
     },
     isLoading: false,
     maxVideoResults: 16,
     nextPageToken: '',
     selectedSlide: 1,
-    totalCardsOnSlide: this.getTotalCardsOnSlide(),
+    totalCardsOnSlide: App.getTotalCardsOnSlide(),
     numberFirstCardOnSelectedSlide: 1,
     isSliderAnimated: false,
     mousePointsX: {
@@ -28,6 +28,23 @@ class App extends Component {
       end: null,
     },
     videosData: [],
+  };
+
+  static getTotalCardsOnSlide() {
+    const { innerWidth } = window;
+    let totalCardsOnSlide = 0;
+
+    if (innerWidth >= 1280) {
+      totalCardsOnSlide = 4;
+    } else if (innerWidth >= 940 && innerWidth < 1280) {
+      totalCardsOnSlide = 3;
+    } else if (innerWidth >= 640 && innerWidth < 940) {
+      totalCardsOnSlide = 2;
+    } else {
+      totalCardsOnSlide = 1;
+    }
+
+    return totalCardsOnSlide;
   }
 
   componentDidMount() {
@@ -38,29 +55,61 @@ class App extends Component {
     window.removeEventListener('resize', this.handleResizeWindow);
   }
 
+  getTotalSlides() {
+    const { videosData, totalCardsOnSlide } = this.state;
+    return Math.ceil(videosData.length / totalCardsOnSlide);
+  }
+
+  getSwipeDirection() {
+    const { mousePointsX } = this.state;
+    const { start: startPointX, end: endPointX } = mousePointsX;
+
+    if (!startPointX || !endPointX) {
+      return false;
+    }
+
+    const diff = startPointX - endPointX;
+
+    if (diff === 0) {
+      return false;
+    }
+
+    let direction = 'left';
+
+    if (diff < 0) {
+      direction = 'right';
+    }
+
+    return direction;
+  }
+
   handleResizeWindow = () => {
     const { totalCardsOnSlide, numberFirstCardOnSelectedSlide } = this.state;
-    const newTotalCardsOnSlide = this.getTotalCardsOnSlide();
+    const newTotalCardsOnSlide = App.getTotalCardsOnSlide();
 
     if (totalCardsOnSlide === newTotalCardsOnSlide) {
       return false;
     }
 
-    const selectedSlide = Math.ceil(numberFirstCardOnSelectedSlide / newTotalCardsOnSlide);
+    const selectedSlide = Math.ceil(
+      numberFirstCardOnSelectedSlide / newTotalCardsOnSlide
+    );
 
     this.setState({
       selectedSlide,
       totalCardsOnSlide: newTotalCardsOnSlide,
     });
-  }
+
+    return true;
+  };
 
   handleSearchTextChange = ({ target: { value } }) => {
     this.setState({
       searchText: value,
     });
-  }
+  };
 
-  handleSubmitForm = (e) => {
+  handleSubmitForm = e => {
     e.preventDefault();
 
     const { searchText } = this.state;
@@ -69,21 +118,26 @@ class App extends Component {
       return false;
     }
 
-    this.setState({
-      selectedSlide: 1,
-      videosData: [],
-      nextPageToken: '',
-      alert: {
-        text: '',
-        type: '',
+    this.setState(
+      {
+        selectedSlide: 1,
+        videosData: [],
+        nextPageToken: '',
+        alert: {
+          text: '',
+          type: '',
+        },
+        isLoading: true,
       },
-      isLoading: true, 
-    }, () => {
-      this.getVideosData();
-    });
-  }
+      () => {
+        this.getVideosData();
+      }
+    );
 
-  handleControlBtnClick = (e) => {
+    return true;
+  };
+
+  handleControlBtnClick = e => {
     const { direction } = e.currentTarget.dataset;
 
     if (!this.canChangeSlide(direction)) {
@@ -91,42 +145,44 @@ class App extends Component {
     }
 
     this.handleSlideChange(direction);
-  }
+    return true;
+  };
 
-  handleMouseDown = (e) => {
+  handleMouseDown = e => {
     const { clientX: startPointX } = e;
     this.handleSwipeStart(startPointX);
-  }
+  };
 
-  handleTouchStart = (e) => {
+  handleTouchStart = e => {
     const { clientX: startPointX } = e.touches[0];
     this.handleSwipeStart(startPointX);
-  }
+  };
 
-  handleMouseMove = (e) => {
+  handleMouseMove = e => {
     const { clientX: endPointX } = e;
     this.handleSwipeMove(endPointX);
-  }
+  };
 
-  handleTouchMove = (e) => {
+  handleTouchMove = e => {
     const { clientX: endPointX } = e.touches[0];
     this.handleSwipeMove(endPointX);
-  }
+  };
 
-  handleSwipeStart = (startPointX) => {
+  handleSwipeStart = startPointX => {
     this.updateMousePointsState(startPointX, null);
-  }
+  };
 
-  handleSwipeMove = (endPointX) => {
+  handleSwipeMove = endPointX => {
     const { mousePointsX } = this.state;
     const { start: startPointX } = mousePointsX;
- 
+
     if (!startPointX) {
       return false;
     }
 
     this.updateMousePointsState(startPointX, endPointX);
-  }
+    return true;
+  };
 
   handleSwipeEnd = () => {
     const swipeDirection = this.getSwipeDirection();
@@ -147,9 +203,11 @@ class App extends Component {
 
     this.handleSlideChange(direction);
     this.updateMousePointsState(null, null);
-  }
 
-  handleSlideChange = (direction) => {
+    return true;
+  };
+
+  handleSlideChange = direction => {
     const { totalCardsOnSlide } = this.state;
     let { selectedSlide } = this.state;
 
@@ -159,64 +217,23 @@ class App extends Component {
       selectedSlide -= 1;
     }
 
-    const numberFirstCardOnSelectedSlide = (selectedSlide - 1) * totalCardsOnSlide + 1;
-    
-    this.setState({
-      selectedSlide,
-      numberFirstCardOnSelectedSlide,
-      isSliderAnimated: true,
-    }, () => {
-      if (this.isNeedToLoadCards()) {
-        this.getVideosData();
+    const numberFirstCardOnSelectedSlide =
+      (selectedSlide - 1) * totalCardsOnSlide + 1;
+
+    this.setState(
+      {
+        selectedSlide,
+        numberFirstCardOnSelectedSlide,
+        isSliderAnimated: true,
+      },
+      () => {
+        if (this.isNeedToLoadCards()) {
+          this.getVideosData();
+        }
+        this.updateSliderAnimatedState();
       }
-      this.updateSliderAnimatedState();
-    });
-  }
-
-  getTotalSlides() {
-    const { videosData, totalCardsOnSlide } = this.state;
-    return Math.ceil(videosData.length / totalCardsOnSlide);
-  }
-
-  getTotalCardsOnSlide() {
-    const { innerWidth } = window;
-    let totalCardsOnSlide = 0;
-
-    if (innerWidth >= 1280) {
-      totalCardsOnSlide = 4;
-    } else if (innerWidth >= 940 && innerWidth < 1280) {
-      totalCardsOnSlide = 3;
-    } else if (innerWidth >= 640 && innerWidth < 940) {
-      totalCardsOnSlide = 2;
-    } else {
-      totalCardsOnSlide = 1;
-    }
-
-    return totalCardsOnSlide;
-  }
-
-  getSwipeDirection() {
-    const { mousePointsX } = this.state;
-    const { start: startPointX, end: endPointX } = mousePointsX;
-
-    if (!startPointX || !endPointX) {
-      return false;
-    }
-
-    const diff = startPointX - endPointX;
-
-    if (diff === 0) {
-      return false;
-    }
-
-    let direction = 'left';
-
-    if (diff < 0) {
-      direction = 'right'
-    }
-
-    return direction;
-  }
+    );
+  };
 
   getVideosData = async () => {
     try {
@@ -226,56 +243,63 @@ class App extends Component {
       if (videosData.length === 0) {
         this.updateAlertState({
           type: 'warning',
-          text: 'We are so sorry! We couldn\'t find any video for your request.',
+          text: "We are so sorry! We couldn't find any video for your request.",
         });
       } else {
         this.updateVideosDataState(videosData);
       }
-    } catch(error) {
+    } catch (error) {
       // TODO: don't show error when we created a slider and other videos don't download
       this.updateAlertState({
         type: 'warning',
-        text: 'Something was wrong! Check your network connection and try searching again.',
+        text:
+          'Something was wrong! Check your network connection and try searching again.',
       });
     }
-  }
+  };
 
   getVideosId = async () => {
-    const { searchText, nextPageToken: pageToken, maxVideoResults } = this.state;
-    const data = await youTubeAPI.fetchVideosId(searchText, pageToken, maxVideoResults);
-    const { nextPageToken = '', items } = data;
-    const id = items.map(
-      ({ id: { videoId } }) => videoId
+    const {
+      searchText,
+      nextPageToken: pageToken,
+      maxVideoResults,
+    } = this.state;
+    const data = await youTubeAPI.fetchVideosId(
+      searchText,
+      pageToken,
+      maxVideoResults
     );
+    const { nextPageToken = '', items } = data;
+    const id = items.map(({ id: { videoId } }) => videoId);
 
     this.setState({ nextPageToken });
     return id;
-  }
+  };
 
   updateSliderAnimatedState = () => {
     const { isSliderAnimated } = this.state;
-    
+
     window.setTimeout(() => {
       this.setState({
         isSliderAnimated: !isSliderAnimated,
       });
     }, ANIMATION_DURATION);
-  }
+  };
 
-  updateAlertState = (alert) => {
+  updateAlertState = alert => {
     this.setState({
       alert,
       isLoading: false,
-    })
-  }
+    });
+  };
 
-  updateVideosDataState = (nextVideosData) => {
+  updateVideosDataState = nextVideosData => {
     const { videosData } = this.state;
     this.setState({
       isLoading: false,
-      videosData: videosData.concat(nextVideosData)
+      videosData: videosData.concat(nextVideosData),
     });
-  }
+  };
 
   updateMousePointsState = (startPointX, endPointX) => {
     this.setState({
@@ -284,9 +308,9 @@ class App extends Component {
         end: endPointX,
       },
     });
-  }
+  };
 
-  canChangeSlide = (direction) => {
+  canChangeSlide = direction => {
     const { selectedSlide, isSliderAnimated } = this.state;
     const totalSlides = this.getTotalSlides();
 
@@ -303,7 +327,7 @@ class App extends Component {
     }
 
     return true;
-  }
+  };
 
   isNeedToLoadCards = () => {
     const { nextPageToken, selectedSlide } = this.state;
@@ -312,13 +336,13 @@ class App extends Component {
     if (!nextPageToken) {
       return false;
     }
-    
-    if (selectedSlide >= totalSlides - 3) {
-      return true;
+
+    if (selectedSlide <= totalSlides - 3) {
+      return false;
     }
 
-    return false;
-  }
+    return true;
+  };
 
   render() {
     const {
@@ -332,7 +356,7 @@ class App extends Component {
     } = this.state;
 
     const totalSlides = this.getTotalSlides();
-    const isExistMoreSlides = nextPageToken ? true : false;
+    const isExistMoreSlides = nextPageToken !== '';
 
     return (
       <main className="wrapper">
@@ -341,7 +365,7 @@ class App extends Component {
           onChange={this.handleSearchTextChange}
           onSubmit={this.handleSubmitForm}
         />
-        {videosData.length !== 0 && 
+        {videosData.length !== 0 && (
           <Slider
             videosData={videosData}
             selectedSlide={selectedSlide}
@@ -356,7 +380,7 @@ class App extends Component {
             onTouchMove={this.handleTouchMove}
             onTouchEnd={this.handleSwipeEnd}
           />
-        }
+        )}
         {alert.text && <Alert options={alert} />}
         {isLoading && <Spinner variant="circle" />}
       </main>
