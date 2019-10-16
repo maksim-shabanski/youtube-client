@@ -14,7 +14,7 @@ class App extends Component {
     searchText: '',
     alert: {
       text: "You haven't searched anything yet.",
-      type: '',
+      variant: '',
     },
     isLoading: false,
     maxVideoResults: 16,
@@ -125,7 +125,7 @@ class App extends Component {
         nextPageToken: '',
         alert: {
           text: '',
-          type: '',
+          variant: '',
         },
         isLoading: true,
       },
@@ -242,7 +242,7 @@ class App extends Component {
 
       if (videosData.length === 0) {
         this.updateAlertState({
-          type: 'warning',
+          variant: 'warning',
           text: "We are so sorry! We couldn't find any video for your request.",
         });
       } else {
@@ -251,7 +251,7 @@ class App extends Component {
     } catch (error) {
       // TODO: don't show error when we created a slider and other videos don't download
       this.updateAlertState({
-        type: 'warning',
+        variant: 'warning',
         text:
           'Something was wrong! Check your network connection and try searching again.',
       });
@@ -354,6 +354,7 @@ class App extends Component {
       selectedSlide,
       totalCardsOnSlide,
     } = this.state;
+    const { variant: alertVariant, text: alertText } = alert;
 
     const totalSlides = this.getTotalSlides();
     const isExistMoreSlides = nextPageToken !== '';
@@ -381,7 +382,7 @@ class App extends Component {
             onTouchEnd={this.handleSwipeEnd}
           />
         )}
-        {alert.text && <Alert options={alert} />}
+        {alertText && <Alert variant={alertVariant}>{alertText}</Alert>}
         {isLoading && <Spinner variant="circle" />}
       </main>
     );
