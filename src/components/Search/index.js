@@ -1,7 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import Button from 'components/Button';
 import './search.scss';
+
+const propTypes = {
+  searchText: PropTypes.string.isRequired,
+  onChange: PropTypes.func,
+  onSubmit: PropTypes.func,
+};
+
+const defaultProps = {
+  onChange: () => {},
+  onSubmit: () => {},
+};
 
 const Search = ({ searchText, onChange, onSubmit }) => (
   <div className="search">
@@ -12,23 +24,13 @@ const Search = ({ searchText, onChange, onSubmit }) => (
         value={searchText}
         onChange={onChange}
         placeholder="Type keywords to find video"
-        autoFocus
       />
       <Button type="grey">Find</Button>
     </form>
   </div>
 );
 
-Search.propTypes = {
-  searchText: PropTypes.string.isRequired,
-  onChange: PropTypes.func,
-  onSubmit: PropTypes.func,
-};
-
-Search.defaultProp = {
-  searchText: '',
-  onChange: () => {},
-  onSubmit: () => {},
-};
+Search.propTypes = propTypes;
+Search.defaultProps = defaultProps;
 
 export default Search;
