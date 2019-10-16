@@ -1,9 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
+
 import './spinner.scss';
 
+const spinnerItemsConfig = {
+  bounce: [
+    {
+      id: 1,
+      modifierClass: 'delay32',
+    },
+    {
+      id: 2,
+      modifierClass: 'delay16',
+    },
+    {
+      id: 3,
+      modifierClass: null,
+    },
+  ],
+  circle: [
+    {
+      id: 1,
+      modifierClass: null,
+    },
+  ],
+};
+
 const propTypes = {
-  variant: PropTypes.string.isRequired,
+  variant: PropTypes.oneOf(['circle', 'bounce']).isRequired,
   as: PropTypes.elementType,
 };
 
@@ -11,28 +36,24 @@ const defaultProps = {
   as: 'div',
 };
 
-const Spinner = ({ variant, as: Component }) => {
-  const prefix = 'spinner';
-  const figureClass = `${prefix}__figure`;
-  const figureClassWithModifier = `${figureClass} ${figureClass}--${variant}`;
-
-  let bodySpinner = <span className={`${figureClassWithModifier}`} />;
-
-  if (variant === 'bounce') {
-    bodySpinner = (
-      <>
-        <span
-          className={`${figureClassWithModifier} ${figureClass}--delay32`}
-        />
-        <span
-          className={`${figureClassWithModifier} ${figureClass}--delay16`}
-        />
-        <span className={`${figureClassWithModifier}`} />
-      </>
+const Spinner = ({ as: Component, variant }) => {
+  const blockClass = 'spinner';
+  const elemClass = `${blockClass}__figure`;
+  const spinnerItems = spinnerItemsConfig[variant];
+  const body = spinnerItems.map(({ id, modifierClass }) => {
+    return (
+      <span
+        key={id}
+        className={classNames(
+          elemClass,
+          `${elemClass}--${variant}`,
+          modifierClass && `${elemClass}--${modifierClass}`
+        )}
+      />
     );
-  }
+  });
 
-  return <Component className={prefix}>{bodySpinner}</Component>;
+  return <Component className={blockClass}>{body}</Component>;
 };
 
 Spinner.propTypes = propTypes;
