@@ -17,6 +17,8 @@
   "rules": {
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/state-in-constructor": "off",
+    "react/jsx-props-no-spreading": "off",
+    "no-param-reassign": "off",
     "prettier/prettier": "error"
   },
   "settings": {
