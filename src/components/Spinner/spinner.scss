@@ -1,14 +1,14 @@
 .spinner {
-	--spinnerHeight: 40px;
-	--spinnerWidth: 40px;
+	--spinner-height: 40px;
+	--spinner-width: 40px;
 
 	text-align: center;
 
 	&__figure {
 		position: relative;
 		display: inline-block;
-		width: var(--spinnerWidth);
-		height: var(--spinnerHeight);
+		width: var(--spinner-width);
+		height: var(--spinner-height);
 		vertical-align: middle;
 
 		&--circle {
@@ -17,32 +17,32 @@
 				position: absolute;
 				top: 0;
 				left: 0;
-				width: var(--spinnerWidth);
-				height: var(--spinnerHeight);
+				width: var(--spinner-width);
+				height: var(--spinner-height);
 				border-radius: 50%;
 				content: "";
 			}
 
 			&::before {
-				border: 3px solid rgba(0, 0, 0, .1);
+				border: 3px solid var(--grey-400);
 			}
 
 			&::after {
 				border-width: 3px;
 				border-style: solid;
-				border-color: var(--red) transparent transparent;
+				border-color: var(--red-900) transparent transparent;
 				animation: spinner-circle .6s linear;
 				animation-iteration-count: infinite;
 			}
 		}
 
 		&--bounce {
-			--spinnerHeight: 6px;
-			--spinnerWidth: 6px;
+			--spinner-height: 6px;
+			--spinner-width: 6px;
 
 			margin: 0 2px;
 			border-radius: 100%;
-			background-color: rgba(0, 0, 0, .2);
+			background-color: var(--black);
 			animation: spinner-bounce 1.4s ease-in-out 0s infinite both;
 		}
 
@@ -65,6 +65,7 @@
 		transform: rotate(360deg);
 	}
 }
+
 @keyframes spinner-bounce {
 	0%,
 	80%,

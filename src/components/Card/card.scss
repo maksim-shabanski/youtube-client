@@ -1,26 +1,26 @@
 .card {
-	--cardWidth: 290px;
+	--card-width: 290px;
 
 	display: flex;
 	flex-direction: column;
 	margin: 0 10px;
-	width: var(--cardWidth);
-	border: var(--borderGrey);
+	width: var(--card-width);
+	border: 1px solid var(--grey-400);
 	border-top: 0;
-	border-radius: var(--borderRadius);
+	border-radius: var(--border-radius);
 
 	&__thumbnail {
 		margin: 0 -1px;
-		width: var(--cardWidth);
+		width: var(--card-width);
 		height: 216px;
-		background-color: #ccc;
+		background-color: var(--grey-400);
 	}
 
 	&__img {
 		display: block;
 		max-width: 100%;
 		height: auto;
-		border-radius: var(--borderRadius) var(--borderRadius) 0 0;
+		border-radius: var(--border-radius) var(--border-radius) 0 0;
 	}
 
 	&__body {
@@ -33,7 +33,7 @@
 	&__metadata,
 	&__author {
 		margin-bottom: 8px;
-		color: var(--gray);
+		color: var(--grey-600);
 		font-size: 12px;
 		line-height: 18px;
 	}
@@ -45,12 +45,12 @@
 	}
 
 	&__author-link {
-		color: var(--gray);
+		color: var(--grey-600);
 		text-decoration: none;
 		transition: color .15s ease-in-out;
 
 		&:hover {
-			color: var(--red);
+			color: var(--red-900);
 		}
 	}
 
@@ -65,9 +65,9 @@
 	&__title {
 		overflow: hidden;
 		margin-bottom: 2px;
-		max-height: 45px;
+		max-height: 40px;
 		font-size: 16px;
-		line-height: 22px;
+		line-height: 20px;
 	}
 
 	&__title-link {

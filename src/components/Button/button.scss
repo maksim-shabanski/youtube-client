@@ -1,52 +1,51 @@
 .btn {
-  display: inline-block;
-  padding: 6px 20px;
+	--btn-text-color: var(--black);
+	--btn-background-color: transparent;
+	--btn-border-color: transparent;
 
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.5;
-  vertical-align: middle;
-  text-align: center;
-  color: #fff;
-  text-decoration: none;
+	display: inline-block;
+	padding: 6px 20px;
+	border: 1px solid var(--btn-border-color);
+	border-radius: var(--border-radius-2x);
+	background-color: var(--btn-background-color);
+	color: var(--btn-text-color);
+	vertical-align: middle;
+	text-align: center;
+	text-decoration: none;
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 1.5;
+	cursor: pointer;
+	transition:
+		background-color 250ms cubic-bezier(.4, 0, .2, 1) 0ms,
+		border-color 250ms cubic-bezier(.4, 0, .2, 1) 0ms;
+	user-select: none;
 
-  background-color: var(--redLight);
-  border: none;
-  border-radius: var(--borderRadius2x);
+	&:disabled {
+		cursor: default;
+	}
 
-  transition: color 0.15s ease-in-out,
-  background-color 0.15s ease-in-out;
+	&--grey {
+		--btn-background-color: var(--grey-200);
+		--btn-border-color: var(--grey-400);
 
-  user-select: none;
+		&:hover {
+			--btn-background-color: var(--grey-300);
+		}
 
-  &:hover {
-    background-color: var(--red);
-  }
+		&:disabled {
+			--btn-background-color: var(--grey-300);
+			--btn-border-color: var(--grey-300);
+			--btn-text-color: var(--grey-400);
+		}
+	}
 
-  &:active,
-  &:focus {
-    background-color: var(--redDark);
-  }
+	&--outlined-red {
+		--btn-text-color: var(--red-900);
+		--btn-border-color: var(--red-900);
 
-  &--grey {
-    width: 80px;
-
-    font-size: 12px;
-    background-color: var(--greyLight);
-    border: var(--borderGrey);
-    border-left: none;
-    border-radius: 0 2px 2px 0;
-    outline: 0;
-    color: #000;
-    cursor: pointer;
-
-    &:hover {
-      background-color: var(--grey);
-    }
-
-    &:active,
-    &:focus {
-      background-color: var(--greyDark);
-    }
-  }
+		&:hover {
+			--btn-background-color: var(--red-50);
+		}
+	}
 }

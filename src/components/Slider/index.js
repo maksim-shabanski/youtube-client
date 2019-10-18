@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Spinner from 'components/Spinner';
 import Card from 'components/Card';
+import Button from 'components/Button';
 import { ANIMATION_DURATION, CARD_WIDTH } from 'utilities/constants';
 import './slider.scss';
 
@@ -82,25 +83,27 @@ const Slider = ({
         ))}
       </div>
       <div className="slider__controls">
-        <button
+        <Button
           type="button"
-          data-direction="prev"
           className="slider__btn"
+          color="grey"
+          data-direction="prev"
           disabled={isDisabledPrevBtn}
           onClick={onClick}
         >
           Prev
-        </button>
+        </Button>
         <span className="slider__current-page">{selectedSlide}</span>
-        <button
+        <Button
           type="button"
-          data-direction="next"
           className="slider__btn"
+          color="grey"
+          data-direction="next"
           disabled={isDisabledNextBtn}
           onClick={onClick}
         >
           {nextBtnCaption}
-        </button>
+        </Button>
       </div>
     </div>
   );

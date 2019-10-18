@@ -25,7 +25,9 @@ const Search = ({ searchText, onChange, onSubmit }) => (
         onChange={onChange}
         placeholder="Type keywords to find video"
       />
-      <Button type="grey">Find</Button>
+      <Button className="search__btn" type="submit" color="grey">
+        Find
+      </Button>
     </form>
   </div>
 );

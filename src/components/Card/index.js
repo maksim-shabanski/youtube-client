@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
+import Button from 'components/Button';
 import shrinkNumber from 'utilities/shrinkNumber';
 import './card.scss';
 
@@ -79,9 +80,14 @@ const Card = ({ videoData }) => {
         <div className="card__desc">
           <p>{oneLineDesc || 'No description'}</p>
         </div>
-        <a className="btn" href={`${VIDEO_PATH}${id}`}>
+        <Button
+          href={`${VIDEO_PATH}${id}`}
+          as="a"
+          variant="outlined"
+          color="red"
+        >
           Watch video
-        </a>
+        </Button>
       </div>
     </div>
   );
