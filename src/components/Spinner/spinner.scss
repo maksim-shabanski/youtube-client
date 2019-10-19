@@ -44,14 +44,14 @@
 			border-radius: 100%;
 			background-color: var(--black);
 			animation: spinner-bounce 1.4s ease-in-out 0s infinite both;
-		}
 
-		&--delay32 {
-			animation-delay: -.32s;
-		}
+			&:nth-child(1) {
+				animation-delay: -.32s;
+			}
 
-		&--delay16 {
-			animation-delay: -.16s;
+			&:nth-child(2) {
+				animation-delay: -.16s;
+			}
 		}
 	}
 }

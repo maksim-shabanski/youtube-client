@@ -4,31 +4,8 @@ import classNames from 'classnames';
 
 import './spinner.scss';
 
-const spinnerItemsConfig = {
-  bounce: [
-    {
-      id: 1,
-      modifierClass: 'delay32',
-    },
-    {
-      id: 2,
-      modifierClass: 'delay16',
-    },
-    {
-      id: 3,
-      modifierClass: null,
-    },
-  ],
-  circle: [
-    {
-      id: 1,
-      modifierClass: null,
-    },
-  ],
-};
-
 const propTypes = {
-  variant: PropTypes.oneOf(['circle', 'bounce']).isRequired,
+  variant: PropTypes.string.isRequired,
   as: PropTypes.elementType,
 };
 
@@ -37,23 +14,23 @@ const defaultProps = {
 };
 
 const Spinner = ({ as: Component, variant }) => {
-  const blockClass = 'spinner';
-  const elemClass = `${blockClass}__figure`;
-  const spinnerItems = spinnerItemsConfig[variant];
-  const body = spinnerItems.map(({ id, modifierClass }) => {
-    return (
-      <span
-        key={id}
-        className={classNames(
-          elemClass,
-          `${elemClass}--${variant}`,
-          modifierClass && `${elemClass}--${modifierClass}`
-        )}
-      />
-    );
-  });
+  const prefix = 'spinner';
+  const elemClass = `${prefix}__figure`;
+  const classes = classNames(elemClass, `${elemClass}--${variant}`);
 
-  return <Component className={blockClass}>{body}</Component>;
+  let body = <span className={classes} />;
+
+  if (variant === 'bounce') {
+    body = (
+      <>
+        <span className={classes} />
+        <span className={classes} />
+        <span className={classes} />
+      </>
+    );
+  }
+
+  return <Component className={prefix}>{body}</Component>;
 };
 
 Spinner.propTypes = propTypes;
