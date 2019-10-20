@@ -1,4 +1,4 @@
-const shrinkNumber = (number) => {
+const trimNumber = number => {
   if (number / 1000000 >= 1) {
     let result = (number / 1000000).toFixed(2);
 
@@ -6,14 +6,14 @@ const shrinkNumber = (number) => {
       result = result.slice(0, -1);
     }
 
-    return result + 'M';
+    return `${result}M`;
   }
 
   if (number / 1000 >= 1) {
-    return Math.floor(number / 1000) + 'K';
+    return `${Math.floor(number / 1000)}K`;
   }
 
   return number;
-}
+};
 
-export default shrinkNumber;
+export default trimNumber;

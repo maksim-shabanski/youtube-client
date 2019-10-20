@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 import Button from 'components/Button';
-import shrinkNumber from 'utilities/shrinkNumber';
+import trimNumber from 'utilities/trimNumber';
 import './card.scss';
 
 dayjs.extend(relativeTime);
@@ -72,7 +72,7 @@ const Card = ({ videoData }) => {
           </a>
         </h2>
         <div className="card__metadata">
-          <span className="card__views">{shrinkNumber(viewCount)} views</span>
+          <span className="card__views">{trimNumber(viewCount)} views</span>
           <time className="card__date" dateTime={publishedAt}>
             {dayjs().to(publishedAt)}
           </time>
