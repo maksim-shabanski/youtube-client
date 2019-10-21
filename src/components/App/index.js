@@ -264,7 +264,7 @@ class App extends Component {
       pageToken,
       maxVideoResults
     );
-    const { nextPageToken, items } = data;
+    const { nextPageToken = '', items } = data;
     const id = items.map(({ id: { videoId } }) => videoId);
 
     this.setState({ pageToken: nextPageToken });
