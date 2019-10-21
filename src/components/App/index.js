@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
+
 import Search from 'components/Search';
 import Alert from 'components/Alert';
 import Spinner from 'components/Spinner';
 import Slider from 'components/Slider';
-import YouTubeAPI from 'services/youtubeAPI';
+import youTubeAPI from 'services/youtubeAPI';
 import { ANIMATION_DURATION } from 'utilities/constants';
 import './app.scss';
-
-const youTubeAPI = new YouTubeAPI();
 
 class App extends Component {
   state = {
