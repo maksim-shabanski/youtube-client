@@ -1,11 +1,8 @@
 .alert {
 	position: relative;
-	margin: 15px auto;
-	padding: 15px 20px;
-	max-width: 650px;
 	color: var(--grey-600);
 	text-align: center;
-	font-size: 12px;
+	font-size: var(--font-size-tiny);
 
 	&--warning {
 		color: var(--red-900);

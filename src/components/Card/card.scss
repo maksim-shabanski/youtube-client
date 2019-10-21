@@ -7,7 +7,7 @@
 	width: var(--card-width);
 	border: 1px solid var(--grey-400);
 	border-top: 0;
-	border-radius: var(--border-radius);
+	border-radius: var(--border-radius-primary);
 
 	&__thumbnail {
 		margin: 0 -1px;
@@ -20,7 +20,7 @@
 		display: block;
 		max-width: 100%;
 		height: auto;
-		border-radius: var(--border-radius) var(--border-radius) 0 0;
+		border-radius: var(--border-radius-primary) var(--border-radius-primary) 0 0;
 	}
 
 	&__body {
@@ -34,8 +34,9 @@
 	&__author {
 		margin-bottom: 8px;
 		color: var(--grey-600);
-		font-size: 12px;
-		line-height: 18px;
+		font-size: var(--font-size-tiny);
+		font-family: inherit;
+		line-height: var(--line-height-lg);
 	}
 
 	&__author {
@@ -66,8 +67,7 @@
 		overflow: hidden;
 		margin-bottom: 2px;
 		max-height: 40px;
-		font-size: 16px;
-		line-height: 20px;
+		font-size: var(--font-size-primary);
 	}
 
 	&__title-link {
@@ -94,7 +94,7 @@
 		p {
 			overflow: hidden;
 			max-height: 110px;
-			font-size: 14px;
+			font-size: var(--font-size-sm);
 		}
 	}
 }
