@@ -17,7 +17,7 @@ class App extends Component {
     },
     isLoading: false,
     maxVideoResults: 16,
-    nextPageToken: '',
+    pageToken: '',
     selectedSlide: 1,
     totalCardsOnSlide: App.getTotalCardsOnSlide(),
     numberFirstCardOnSelectedSlide: 1,
@@ -121,7 +121,7 @@ class App extends Component {
       {
         selectedSlide: 1,
         videosData: [],
-        nextPageToken: '',
+        pageToken: '',
         alert: {
           text: null,
           variant: null,
@@ -258,20 +258,16 @@ class App extends Component {
   };
 
   getVideosId = async () => {
-    const {
-      searchText,
-      nextPageToken: pageToken,
-      maxVideoResults,
-    } = this.state;
+    const { searchText, pageToken, maxVideoResults } = this.state;
     const data = await youTubeAPI.fetchVideosId(
       searchText,
       pageToken,
       maxVideoResults
     );
-    const { nextPageToken = '', items } = data;
+    const { nextPageToken, items } = data;
     const id = items.map(({ id: { videoId } }) => videoId);
 
-    this.setState({ nextPageToken });
+    this.setState({ pageToken: nextPageToken });
     return id;
   };
 
@@ -329,10 +325,10 @@ class App extends Component {
   };
 
   isNeedToLoadCards = () => {
-    const { nextPageToken, selectedSlide } = this.state;
+    const { pageToken, selectedSlide } = this.state;
     const totalSlides = this.getTotalSlides();
 
-    if (!nextPageToken) {
+    if (!pageToken) {
       return false;
     }
 
@@ -345,7 +341,7 @@ class App extends Component {
 
   render() {
     const {
-      nextPageToken,
+      pageToken,
       searchText,
       alert,
       isLoading,
@@ -356,7 +352,7 @@ class App extends Component {
     const { variant: alertVariant, text: alertText } = alert;
 
     const totalSlides = this.getTotalSlides();
-    const isExistMoreSlides = nextPageToken !== '';
+    const isExistMoreSlides = pageToken !== '';
 
     return (
       <main className="wrapper">
