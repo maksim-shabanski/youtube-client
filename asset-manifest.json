@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/youtube-client/static/css/main.1d07291f.chunk.css",
-    "main.js": "/youtube-client/static/js/main.f8e9ab29.chunk.js",
-    "main.js.map": "/youtube-client/static/js/main.f8e9ab29.chunk.js.map",
-    "runtime~main.js": "/youtube-client/static/js/runtime~main.77238eec.js",
-    "runtime~main.js.map": "/youtube-client/static/js/runtime~main.77238eec.js.map",
-    "static/js/2.ca490870.chunk.js": "/youtube-client/static/js/2.ca490870.chunk.js",
-    "static/js/2.ca490870.chunk.js.map": "/youtube-client/static/js/2.ca490870.chunk.js.map",
+    "main.css": "/youtube-client/static/css/main.d7e9043b.chunk.css",
+    "main.js": "/youtube-client/static/js/main.28b36dfa.chunk.js",
+    "main.js.map": "/youtube-client/static/js/main.28b36dfa.chunk.js.map",
+    "runtime~main.js": "/youtube-client/static/js/runtime~main.6cb01d31.js",
+    "runtime~main.js.map": "/youtube-client/static/js/runtime~main.6cb01d31.js.map",
+    "static/js/2.17fa2440.chunk.js": "/youtube-client/static/js/2.17fa2440.chunk.js",
+    "static/js/2.17fa2440.chunk.js.map": "/youtube-client/static/js/2.17fa2440.chunk.js.map",
     "index.html": "/youtube-client/index.html",
-    "precache-manifest.a36efc4a388a291f27ba6c21bb9bb850.js": "/youtube-client/precache-manifest.a36efc4a388a291f27ba6c21bb9bb850.js",
+    "precache-manifest.045c16d8c3ad78ff24c5003e788e93f4.js": "/youtube-client/precache-manifest.045c16d8c3ad78ff24c5003e788e93f4.js",
     "service-worker.js": "/youtube-client/service-worker.js",
-    "static/css/main.1d07291f.chunk.css.map": "/youtube-client/static/css/main.1d07291f.chunk.css.map"
+    "static/css/main.d7e9043b.chunk.css.map": "/youtube-client/static/css/main.d7e9043b.chunk.css.map"
   }
 }
