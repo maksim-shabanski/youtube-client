@@ -1,6 +1,4 @@
 .slider {
-	position: relative;
-	overflow: hidden;
 	margin: 0 -5px;
 	width: 310px;
 
@@ -20,14 +18,19 @@
 		width: 100%;
 	}
 
-	&__track {
-		display: flex;
-		width: 2480px;
-		user-select: none;
+	&__content {
+		position: relative;
+		overflow: hidden;
 
 		&:active {
 			cursor: pointer;
 		}
+	}
+
+	&__track {
+		display: flex;
+		transition: transform var(--transition-duration-primary) ease-in-out 0s;
+		user-select: none;
 	}
 
 	&__controls {
@@ -53,7 +56,9 @@
 	}
 
 	&__current-page {
-		padding: 0 15px;
+		padding: 0 10px;
+		width: 45px;
+		text-align: center;
 		user-select: none;
 	}
 }

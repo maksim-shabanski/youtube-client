@@ -54,7 +54,7 @@ const Slider = ({
   const scrollPos = (selectedSlide - 1) * CARD_WIDTH * totalCardsOnSlide;
   const sliderTrackStyles = {
     width: `${sliderWidth}px`,
-    transition: `transform ${ANIMATION_DURATION}ms ease-in-out 0s`,
+    transitionDuration: `${ANIMATION_DURATION}ms`,
     transform: `translate3d(-${scrollPos}px, 0, 0)`,
   };
   const isDisabledPrevBtn = selectedSlide === 1;
@@ -69,8 +69,7 @@ const Slider = ({
     <div className="slider">
       <div
         role="presentation"
-        className="slider__track"
-        style={sliderTrackStyles}
+        className="slider__content"
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
@@ -78,9 +77,11 @@ const Slider = ({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {videosData.map(videoData => (
-          <Card key={videoData.id} videoData={videoData} />
-        ))}
+        <div className="slider__track" style={sliderTrackStyles}>
+          {videosData.map(videoData => (
+            <Card key={videoData.id} videoData={videoData} />
+          ))}
+        </div>
       </div>
       <div className="slider__controls">
         <Button
