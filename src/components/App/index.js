@@ -59,9 +59,9 @@ class App extends Component {
     return Math.ceil(videosData.length / totalCardsOnSlide);
   }
 
-  getSwipeDirection() {
+  getSwipeDirection(endPointX) {
     const { mousePointsX } = this.state;
-    const { start: startPointX, end: endPointX } = mousePointsX;
+    const { start: startPointX } = mousePointsX;
 
     if (!startPointX || !endPointX) {
       return false;
@@ -157,21 +157,23 @@ class App extends Component {
     this.handleSwipeStart(startPointX);
   };
 
-  handleMouseMove = e => {
-    const { clientX: endPointX } = e;
-    this.handleSwipeMove(endPointX);
+  handleMouseMove = () => {
+    // TODO: Implement drag event
+    /* const { clientX: endPointX } = e;
+    this.handleSwipeMove(endPointX); */
   };
 
-  handleTouchMove = e => {
-    const { clientX: endPointX } = e.touches[0];
-    this.handleSwipeMove(endPointX);
+  handleTouchMove = () => {
+    // TODO: Implement drag event
+    /* const { clientX: endPointX } = e.touches[0];
+    this.handleSwipeMove(endPointX); */
   };
 
   handleSwipeStart = startPointX => {
     this.updateMousePointsState(startPointX, null);
   };
 
-  handleSwipeMove = endPointX => {
+  /* handleSwipeMove = endPointX => {
     const { mousePointsX } = this.state;
     const { start: startPointX } = mousePointsX;
 
@@ -181,17 +183,24 @@ class App extends Component {
 
     this.updateMousePointsState(startPointX, endPointX);
     return true;
-  };
+  }; */
 
-  handleSwipeEnd = () => {
-    const swipeDirection = this.getSwipeDirection();
+  handleSwipeEnd = e => {
+    const { clientX: endPointX } = e;
+    const {
+      mousePointsX: { start: startPointX },
+    } = this.state;
 
+    if (!startPointX) {
+      return false;
+    }
+
+    const swipeDirection = this.getSwipeDirection(endPointX);
     if (!swipeDirection) {
       return false;
     }
 
     let direction = 'next';
-
     if (swipeDirection === 'right') {
       direction = 'prev';
     }
