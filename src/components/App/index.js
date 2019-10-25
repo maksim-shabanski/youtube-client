@@ -5,30 +5,10 @@ import Alert from 'components/Alert';
 import Spinner from 'components/Spinner';
 import Slider from 'components/Slider';
 import youTubeAPI from 'services/youtubeAPI';
-import { ANIMATION_DURATION } from 'utilities/constants';
+import { ANIMATION_DURATION, CARD_WIDTH } from 'utilities/constants';
 import './app.scss';
 
 class App extends Component {
-  state = {
-    searchText: '',
-    alert: {
-      text: "You haven't searched anything yet.",
-      variant: null,
-    },
-    isLoading: false,
-    maxVideoResults: 16,
-    pageToken: '',
-    selectedSlide: 1,
-    totalCardsOnSlide: App.getTotalCardsOnSlide(),
-    numberFirstCardOnSelectedSlide: 1,
-    isSliderAnimated: false,
-    mousePointsX: {
-      start: null,
-      end: null,
-    },
-    videosData: [],
-  };
-
   static getTotalCardsOnSlide() {
     const { innerWidth } = window;
     let totalCardsOnSlide = 0;
@@ -46,6 +26,41 @@ class App extends Component {
     return totalCardsOnSlide;
   }
 
+  static getDirection(startPoint, endPoint) {
+    const dragDistance = startPoint - endPoint;
+
+    if (dragDistance === 0) {
+      return undefined;
+    }
+
+    let direction = 'next';
+
+    if (dragDistance < 0) {
+      direction = 'prev';
+    }
+
+    return direction;
+  }
+
+  state = {
+    searchText: '',
+    alert: {
+      text: "You haven't searched anything yet.",
+      variant: null,
+    },
+    isLoading: false,
+    maxVideoResults: 16,
+    pageToken: '',
+    selectedSlide: 1,
+    totalCardsOnSlide: App.getTotalCardsOnSlide(),
+    numberFirstCardOnSelectedSlide: 1,
+    isSliderAnimated: false,
+    mouseStartPoint: null,
+    videosData: [],
+  };
+
+  sliderTrack = React.createRef();
+
   componentDidMount() {
     window.addEventListener('resize', this.handleResizeWindow);
   }
@@ -57,29 +72,6 @@ class App extends Component {
   getTotalSlides() {
     const { videosData, totalCardsOnSlide } = this.state;
     return Math.ceil(videosData.length / totalCardsOnSlide);
-  }
-
-  getSwipeDirection(endPointX) {
-    const { mousePointsX } = this.state;
-    const { start: startPointX } = mousePointsX;
-
-    if (!startPointX || !endPointX) {
-      return false;
-    }
-
-    const diff = startPointX - endPointX;
-
-    if (diff === 0) {
-      return false;
-    }
-
-    let direction = 'left';
-
-    if (diff < 0) {
-      direction = 'right';
-    }
-
-    return direction;
   }
 
   handleResizeWindow = () => {
@@ -147,90 +139,96 @@ class App extends Component {
     return true;
   };
 
-  handleMouseDown = e => {
-    const { clientX: startPointX } = e;
-    this.handleSwipeStart(startPointX);
+  handleDragStart = e => {
+    // Prevent to drag links and images
+    const { isSliderAnimated } = this.state;
+    const mouseStartPoint = e.touches ? e.touches[0].clientX : e.clientX;
+
+    if (!e.touches) {
+      e.preventDefault();
+    }
+
+    if (!isSliderAnimated) {
+      this.setState({ mouseStartPoint });
+    }
   };
 
-  handleTouchStart = e => {
-    const { clientX: startPointX } = e.touches[0];
-    this.handleSwipeStart(startPointX);
-  };
+  handleDrag = e => {
+    const { selectedSlide, totalCardsOnSlide, mouseStartPoint } = this.state;
+    const mouseCurrentPoint = e.touches ? e.touches[0].clientX : e.clientX;
 
-  handleMouseMove = () => {
-    // TODO: Implement drag event
-    /* const { clientX: endPointX } = e;
-    this.handleSwipeMove(endPointX); */
-  };
-
-  handleTouchMove = () => {
-    // TODO: Implement drag event
-    /* const { clientX: endPointX } = e.touches[0];
-    this.handleSwipeMove(endPointX); */
-  };
-
-  handleSwipeStart = startPointX => {
-    this.updateMousePointsState(startPointX, null);
-  };
-
-  /* handleSwipeMove = endPointX => {
-    const { mousePointsX } = this.state;
-    const { start: startPointX } = mousePointsX;
-
-    if (!startPointX) {
+    if (!mouseStartPoint) {
       return false;
     }
 
-    this.updateMousePointsState(startPointX, endPointX);
+    const direction = App.getDirection(mouseStartPoint, mouseCurrentPoint);
+
+    if (!direction) {
+      return false;
+    }
+
+    const dragDistance = Math.abs(mouseStartPoint - mouseCurrentPoint);
+    const sliderTrackPosition =
+      (selectedSlide - 1) * CARD_WIDTH * totalCardsOnSlide;
+
+    const newSliderTrackPositon =
+      direction === 'next'
+        ? sliderTrackPosition + dragDistance
+        : sliderTrackPosition - dragDistance;
+
+    const sliderTrack = this.sliderTrack.current;
+    sliderTrack.style.transitionDuration = '0ms';
+    sliderTrack.style.transform = `translate3d(-${newSliderTrackPositon}px, 0, 0)`;
+
     return true;
-  }; */
+  };
 
-  handleSwipeEnd = e => {
-    const { clientX: endPointX } = e;
-    const {
-      mousePointsX: { start: startPointX },
-    } = this.state;
+  handleDragEnd = e => {
+    const { mouseStartPoint } = this.state;
+    const mouseEndPoint = e.changedTouches
+      ? e.changedTouches[0].clientX
+      : e.clientX;
 
-    if (!startPointX) {
+    if (!mouseStartPoint) {
       return false;
     }
 
-    const swipeDirection = this.getSwipeDirection(endPointX);
-    if (!swipeDirection) {
-      return false;
-    }
+    const direction = App.getDirection(mouseStartPoint, mouseEndPoint);
+    this.setState({ mouseStartPoint: null });
 
-    let direction = 'next';
-    if (swipeDirection === 'right') {
-      direction = 'prev';
+    if (!direction) {
+      return false;
     }
 
     if (!this.canChangeSlide(direction)) {
       return false;
     }
 
+    this.sliderTrack.current.style.transitionDuration = `${ANIMATION_DURATION}ms`;
     this.handleSlideChange(direction);
-    this.updateMousePointsState(null, null);
 
     return true;
   };
 
-  handleSlideChange = direction => {
-    const { totalCardsOnSlide } = this.state;
-    let { selectedSlide } = this.state;
+  handleSliderClick = e => {
+    const { isSliderAnimated } = this.state;
 
-    if (direction === 'next') {
-      selectedSlide += 1;
-    } else {
-      selectedSlide -= 1;
+    // Prevent to go a link after mouseup event
+    if (isSliderAnimated) {
+      e.preventDefault();
     }
+  };
 
+  handleSlideChange = direction => {
+    const { totalCardsOnSlide, selectedSlide } = this.state;
+    const newSelectedSlide =
+      direction === 'next' ? selectedSlide + 1 : selectedSlide - 1;
     const numberFirstCardOnSelectedSlide =
-      (selectedSlide - 1) * totalCardsOnSlide + 1;
+      (newSelectedSlide - 1) * totalCardsOnSlide + 1;
 
     this.setState(
       {
-        selectedSlide,
+        selectedSlide: newSelectedSlide,
         numberFirstCardOnSelectedSlide,
         isSliderAnimated: true,
       },
@@ -308,15 +306,6 @@ class App extends Component {
     });
   };
 
-  updateMousePointsState = (startPointX, endPointX) => {
-    this.setState({
-      mousePointsX: {
-        start: startPointX,
-        end: endPointX,
-      },
-    });
-  };
-
   canChangeSlide = direction => {
     const { selectedSlide, isSliderAnimated } = this.state;
     const totalSlides = this.getTotalSlides();
@@ -375,18 +364,21 @@ class App extends Component {
         />
         {videosData.length !== 0 && (
           <Slider
+            ref={this.sliderTrack}
             videosData={videosData}
             selectedSlide={selectedSlide}
             totalSlides={totalSlides}
             isExistMoreSlides={isExistMoreSlides}
             totalCardsOnSlide={totalCardsOnSlide}
-            onClick={this.handleControlBtnClick}
-            onMouseDown={this.handleMouseDown}
-            onMouseMove={this.handleMouseMove}
-            onMouseUp={this.handleSwipeEnd}
-            onTouchStart={this.handleTouchStart}
-            onTouchMove={this.handleTouchMove}
-            onTouchEnd={this.handleSwipeEnd}
+            onControlClick={this.handleControlBtnClick}
+            onClick={this.handleSliderClick}
+            onMouseDown={this.handleDragStart}
+            onMouseMove={this.handleDrag}
+            onMouseUp={this.handleDragEnd}
+            onMouseLeave={this.handleDragEnd}
+            onTouchStart={this.handleDragStart}
+            onTouchMove={this.handleDrag}
+            onTouchEnd={this.handleDragEnd}
           />
         )}
         {alertText && <Alert variant={alertVariant}>{alertText}</Alert>}

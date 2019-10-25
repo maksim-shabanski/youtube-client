@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Spinner from 'components/Spinner';
 import Card from 'components/Card';
 import Button from 'components/Button';
-import { ANIMATION_DURATION, CARD_WIDTH } from 'utilities/constants';
+import { CARD_WIDTH } from 'utilities/constants';
 import './slider.scss';
 
 const propTypes = {
@@ -13,13 +13,7 @@ const propTypes = {
   totalSlides: PropTypes.number,
   totalCardsOnSlide: PropTypes.number,
   isExistMoreSlides: PropTypes.bool,
-  onClick: PropTypes.func,
-  onMouseDown: PropTypes.func,
-  onMouseMove: PropTypes.func,
-  onMouseUp: PropTypes.func,
-  onTouchStart: PropTypes.func,
-  onTouchMove: PropTypes.func,
-  onTouchEnd: PropTypes.func,
+  onControlClick: PropTypes.func,
 };
 
 const defaultProps = {
@@ -27,57 +21,42 @@ const defaultProps = {
   totalSlides: 1,
   totalCardsOnSlide: 1,
   isExistMoreSlides: true,
-  onClick: () => {},
-  onMouseDown: () => {},
-  onMouseMove: () => {},
-  onMouseUp: () => {},
-  onTouchStart: () => {},
-  onTouchMove: () => {},
-  onTouchEnd: () => {},
+  onControlClick: () => {},
 };
 
-const Slider = ({
-  videosData,
-  selectedSlide,
-  totalSlides,
-  isExistMoreSlides,
-  totalCardsOnSlide,
-  onClick,
-  onMouseDown,
-  onMouseMove,
-  onMouseUp,
-  onTouchStart,
-  onTouchMove,
-  onTouchEnd,
-}) => {
-  const sliderWidth = videosData.length * CARD_WIDTH;
-  const scrollPos = (selectedSlide - 1) * CARD_WIDTH * totalCardsOnSlide;
+const Slider = React.forwardRef((props, ref) => {
+  const {
+    videosData,
+    selectedSlide,
+    totalSlides,
+    isExistMoreSlides,
+    totalCardsOnSlide,
+    onControlClick,
+    ...mouseEventsProps
+  } = props;
+
+  const sliderTrackWidth = videosData.length * CARD_WIDTH;
+  const sliderTrackPosition =
+    (selectedSlide - 1) * CARD_WIDTH * totalCardsOnSlide;
+
   const sliderTrackStyles = {
-    width: `${sliderWidth}px`,
-    transitionDuration: `${ANIMATION_DURATION}ms`,
-    transform: `translate3d(-${scrollPos}px, 0, 0)`,
+    width: `${sliderTrackWidth}px`,
+    transform: `translate3d(-${sliderTrackPosition}px, 0, 0)`,
   };
+
   const isDisabledPrevBtn = selectedSlide === 1;
   const isDisabledNextBtn = selectedSlide === totalSlides;
 
   let nextBtnCaption = 'Next';
+
   if (isExistMoreSlides && selectedSlide === totalSlides) {
     nextBtnCaption = <Spinner variant="bounce" as="span" />;
   }
 
   return (
     <div className="slider">
-      <div
-        role="presentation"
-        className="slider__content"
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <div className="slider__track" style={sliderTrackStyles}>
+      <div className="slider__content" {...mouseEventsProps}>
+        <div ref={ref} className="slider__track" style={sliderTrackStyles}>
           {videosData.map(videoData => (
             <Card key={videoData.id} videoData={videoData} />
           ))}
@@ -90,7 +69,7 @@ const Slider = ({
           color="grey"
           data-direction="prev"
           disabled={isDisabledPrevBtn}
-          onClick={onClick}
+          onClick={onControlClick}
         >
           Prev
         </Button>
@@ -101,16 +80,17 @@ const Slider = ({
           color="grey"
           data-direction="next"
           disabled={isDisabledNextBtn}
-          onClick={onClick}
+          onClick={onControlClick}
         >
           {nextBtnCaption}
         </Button>
       </div>
     </div>
   );
-};
+});
 
 Slider.propTypes = propTypes;
 Slider.defaultProps = defaultProps;
+Slider.displayName = 'Slider';
 
 export default Slider;
