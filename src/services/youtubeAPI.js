@@ -1,5 +1,5 @@
 const BASE_PATH = 'https://www.googleapis.com/youtube/v3';
-const KEY = 'key=AIzaSyCTWC75i70moJLzyNh3tt4jzCljZcRkU8Y';
+const KEY = 'key=AIzaSyCa9jR_UScpOg4BAgwC2kdjc9U1dZh1kkY';
 
 class YouTubeAPI {
   static async fetchVideosData(id) {
