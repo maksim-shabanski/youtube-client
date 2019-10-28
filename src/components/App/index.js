@@ -185,22 +185,18 @@ class App extends Component {
 
   handleDragEnd = e => {
     const { mouseStartPoint } = this.state;
-    const mouseEndPoint = e.changedTouches
-      ? e.changedTouches[0].clientX
-      : e.clientX;
 
     if (!mouseStartPoint) {
       return false;
     }
 
+    const mouseEndPoint = e.changedTouches
+      ? e.changedTouches[0].clientX
+      : e.clientX;
     const direction = App.getDirection(mouseStartPoint, mouseEndPoint);
-    this.setState({ mouseStartPoint: null });
 
-    if (!direction) {
-      return false;
-    }
-
-    if (!this.canChangeSlide(direction)) {
+    if (!direction || !this.canChangeSlide(direction)) {
+      this.setState({ mouseStartPoint: null });
       return false;
     }
 
@@ -228,9 +224,10 @@ class App extends Component {
 
     this.setState(
       {
+        isSliderAnimated: true,
         selectedSlide: newSelectedSlide,
         numberFirstCardOnSelectedSlide,
-        isSliderAnimated: true,
+        mouseStartPoint: null,
       },
       () => {
         if (this.isNeedToLoadCards()) {
