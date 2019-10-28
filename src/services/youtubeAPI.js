@@ -1,5 +1,4 @@
-const BASE_PATH = 'https://www.googleapis.com/youtube/v3';
-const KEY = 'key=AIzaSyCa9jR_UScpOg4BAgwC2kdjc9U1dZh1kkY';
+import { YOUTUBE_API_URL, YOUTUBE_API_KEY } from 'utilities/constants';
 
 class YouTubeAPI {
   static async fetchVideosData(id) {
@@ -28,7 +27,7 @@ class YouTubeAPI {
   }
 
   static buildUrlQueryString({ typeResource, ...otherParams }) {
-    let path = `${BASE_PATH}/${typeResource}?${KEY}`;
+    let path = `${YOUTUBE_API_URL}/${typeResource}?key=${YOUTUBE_API_KEY}`;
 
     Object.keys(otherParams).forEach(param => {
       path += `&${param}=${otherParams[param]}`;
