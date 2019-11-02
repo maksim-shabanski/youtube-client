@@ -1,7 +1,7 @@
 import { YOUTUBE_API_URL, YOUTUBE_API_KEY } from 'utilities/constants';
 
 class YouTubeAPI {
-  static async fetchVideosData(id) {
+  static async fetchExtendedVideosData(id) {
     const path = YouTubeAPI.buildUrlQueryString({
       typeResource: 'videos',
       part: 'snippet,statistics',
@@ -12,11 +12,11 @@ class YouTubeAPI {
     return videosData;
   }
 
-  static async fetchVideosId(searchText, pageToken, maxResults) {
+  static async fetchBasicVideosData(searchText, pageToken, maxResults) {
     const path = YouTubeAPI.buildUrlQueryString({
       typeResource: 'search',
       type: 'video',
-      part: 'id',
+      part: 'snippet',
       q: searchText,
       maxResults,
       ...(pageToken && { pageToken }),

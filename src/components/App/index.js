@@ -48,15 +48,16 @@ class App extends Component {
       text: "You haven't searched anything yet.",
       variant: null,
     },
-    isLoading: false,
-    maxVideoResults: 16,
+    isLoadingData: false,
+    showSpinner: false,
+    maxVideoResults: 24,
     pageToken: '',
     selectedSlide: 1,
     totalCardsOnSlide: App.getTotalCardsOnSlide(),
     numberFirstCardOnSelectedSlide: 1,
     isSliderAnimated: false,
     mouseStartPoint: null,
-    videosData: [],
+    videosDataMap: new Map(),
   };
 
   sliderTrack = React.createRef();
@@ -70,8 +71,8 @@ class App extends Component {
   }
 
   getTotalSlides() {
-    const { videosData, totalCardsOnSlide } = this.state;
-    return Math.ceil(videosData.length / totalCardsOnSlide);
+    const { videosDataMap, totalCardsOnSlide } = this.state;
+    return Math.ceil(videosDataMap.size / totalCardsOnSlide);
   }
 
   handleResizeWindow = () => {
@@ -112,13 +113,15 @@ class App extends Component {
     this.setState(
       {
         selectedSlide: 1,
-        videosData: [],
+        numberFirstCardOnSelectedSlide: 1,
+        videosDataMap: new Map(),
         pageToken: '',
         alert: {
           text: null,
           variant: null,
         },
-        isLoading: true,
+        showSpinner: true,
+        isLoadingData: true,
       },
       () => {
         this.getVideosData();
@@ -140,10 +143,10 @@ class App extends Component {
   };
 
   handleDragStart = e => {
-    // Prevent to drag links and images
     const { isSliderAnimated } = this.state;
     const mouseStartPoint = e.touches ? e.touches[0].clientX : e.clientX;
 
+    // Prevent to drag links and images with the mouse
     if (!e.touches) {
       e.preventDefault();
     }
@@ -216,91 +219,116 @@ class App extends Component {
   };
 
   handleSlideChange = direction => {
-    const { totalCardsOnSlide, selectedSlide } = this.state;
+    let isLoadingDataStart = false;
+    const { totalCardsOnSlide, selectedSlide, isLoadingData } = this.state;
     const newSelectedSlide =
       direction === 'next' ? selectedSlide + 1 : selectedSlide - 1;
     const numberFirstCardOnSelectedSlide =
       (newSelectedSlide - 1) * totalCardsOnSlide + 1;
 
+    if (!isLoadingData && this.isNeedToLoadCards(newSelectedSlide)) {
+      this.getVideosData();
+      isLoadingDataStart = true;
+    }
+
     this.setState(
       {
+        ...(isLoadingDataStart && { isLoadingData: true }),
         isSliderAnimated: true,
         selectedSlide: newSelectedSlide,
         numberFirstCardOnSelectedSlide,
         mouseStartPoint: null,
       },
       () => {
-        if (this.isNeedToLoadCards()) {
-          this.getVideosData();
-        }
         this.updateSliderAnimatedState();
       }
     );
   };
 
   getVideosData = async () => {
-    const { videosData } = this.state;
+    let stateOptions;
+    const { videosDataMap } = this.state;
+    const currentVideosDataMap = new Map([...videosDataMap]);
 
     try {
-      const id = await this.getVideosId();
-      const { items: newVideosData } = await youTubeAPI.fetchVideosData(id);
+      const videosIds = [];
+      const basicVideosData = await this.getBasicVideosData();
+      const {
+        nextPageToken = '',
+        items: basicVideosDataList,
+      } = basicVideosData;
 
-      if (newVideosData.length === 0) {
-        this.updateAlertState({
-          variant: 'warning',
-          text: "We are so sorry! We couldn't find any video for your request.",
-        });
+      basicVideosDataList.forEach(({ id: { videoId } }) => {
+        if (!currentVideosDataMap.has(videoId)) {
+          videosIds.push(videoId);
+        }
+      });
+
+      if (videosIds.length === 0) {
+        return false;
+      }
+
+      const extendedVideosData = await youTubeAPI.fetchExtendedVideosData(
+        videosIds
+      );
+      const { items: extendedVideosDataList } = extendedVideosData;
+
+      extendedVideosDataList.forEach(videoData => {
+        currentVideosDataMap.set(videoData.id, videoData);
+      });
+
+      if (currentVideosDataMap.size > 0) {
+        stateOptions = {
+          pageToken: nextPageToken,
+          videosDataMap: currentVideosDataMap,
+        };
       } else {
-        this.updateVideosDataState(newVideosData);
+        stateOptions = {
+          alert: {
+            variant: 'warning',
+            text:
+              "We are so sorry! We couldn't find any video for your request.",
+          },
+        };
       }
     } catch (error) {
-      if (!videosData.length) {
-        this.updateAlertState({
-          variant: 'warning',
-          text:
-            'Something was wrong! Check your network connection and try searching again.',
-        });
+      if (!currentVideosDataMap.size) {
+        stateOptions = {
+          alert: {
+            variant: 'warning',
+            text:
+              'Something was wrong! Check your network connection and try searching again.',
+          },
+        };
       }
     }
+
+    this.setState({
+      ...stateOptions,
+      showSpinner: false,
+      isLoadingData: false,
+    });
+
+    return true;
   };
 
-  getVideosId = async () => {
+  getBasicVideosData = async () => {
     const { searchText, pageToken, maxVideoResults } = this.state;
-    const data = await youTubeAPI.fetchVideosId(
+    const data = await youTubeAPI.fetchBasicVideosData(
       searchText,
       pageToken,
       maxVideoResults
     );
-    const { nextPageToken = '', items } = data;
-    const id = items.map(({ id: { videoId } }) => videoId);
 
-    this.setState({ pageToken: nextPageToken });
-    return id;
+    return data;
   };
 
   updateSliderAnimatedState = () => {
-    const { isSliderAnimated } = this.state;
-
     window.setTimeout(() => {
       this.setState({
-        isSliderAnimated: !isSliderAnimated,
+        isSliderAnimated: false,
       });
     }, ANIMATION_DURATION);
-  };
-
-  updateAlertState = alert => {
-    this.setState({
-      alert,
-      isLoading: false,
-    });
-  };
-
-  updateVideosDataState = nextVideosData => {
-    const { videosData } = this.state;
-    this.setState({
-      isLoading: false,
-      videosData: videosData.concat(nextVideosData),
-    });
   };
 
   canChangeSlide = direction => {
@@ -322,8 +350,8 @@ class App extends Component {
     return true;
   };
 
-  isNeedToLoadCards = () => {
-    const { pageToken, selectedSlide } = this.state;
+  isNeedToLoadCards = selectedSlide => {
+    const { pageToken } = this.state;
     const totalSlides = this.getTotalSlides();
 
     if (!pageToken) {
@@ -342,8 +370,8 @@ class App extends Component {
       pageToken,
       searchText,
       alert,
-      isLoading,
-      videosData,
+      showSpinner,
+      videosDataMap,
       selectedSlide,
       totalCardsOnSlide,
     } = this.state;
@@ -359,10 +387,10 @@ class App extends Component {
           onChange={this.handleSearchTextChange}
           onSubmit={this.handleSubmitForm}
         />
-        {videosData.length !== 0 && (
+        {videosDataMap.size !== 0 && (
           <Slider
             ref={this.sliderTrack}
-            videosData={videosData}
+            videosDataMap={videosDataMap}
             selectedSlide={selectedSlide}
             totalSlides={totalSlides}
             isExistMoreSlides={isExistMoreSlides}
@@ -379,7 +407,7 @@ class App extends Component {
           />
         )}
         {alertText && <Alert variant={alertVariant}>{alertText}</Alert>}
-        {isLoading && <Spinner variant="circle" />}
+        {showSpinner && <Spinner variant="circle" />}
       </main>
     );
   }

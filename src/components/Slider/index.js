@@ -8,7 +8,7 @@ import { CARD_WIDTH } from 'utilities/constants';
 import './slider.scss';
 
 const propTypes = {
-  videosData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  videosDataMap: PropTypes.instanceOf(Map).isRequired,
   selectedSlide: PropTypes.number,
   totalSlides: PropTypes.number,
   totalCardsOnSlide: PropTypes.number,
@@ -26,7 +26,7 @@ const defaultProps = {
 
 const Slider = React.forwardRef((props, ref) => {
   const {
-    videosData,
+    videosDataMap,
     selectedSlide,
     totalSlides,
     isExistMoreSlides,
@@ -34,8 +34,8 @@ const Slider = React.forwardRef((props, ref) => {
     onControlClick,
     ...mouseEventsProps
   } = props;
-
-  const sliderTrackWidth = videosData.length * CARD_WIDTH;
+  const videoCards = [];
+  const sliderTrackWidth = videosDataMap.size * CARD_WIDTH;
   const sliderTrackPosition =
     (selectedSlide - 1) * CARD_WIDTH * totalCardsOnSlide;
 
@@ -53,13 +53,17 @@ const Slider = React.forwardRef((props, ref) => {
     nextBtnCaption = <Spinner variant="bounce" as="span" />;
   }
 
+  videosDataMap.forEach((videoData, videoHash) => {
+    // eslint-disable-next-line react/no-array-index-key
+    const card = <Card key={videoHash} videoData={videoData} />;
+    videoCards.push(card);
+  });
+
   return (
     <div className="slider">
       <div className="slider__content" {...mouseEventsProps}>
         <div ref={ref} className="slider__track" style={sliderTrackStyles}>
-          {videosData.map(videoData => (
-            <Card key={videoData.id} videoData={videoData} />
-          ))}
+          {videoCards}
         </div>
       </div>
       <div className="slider__controls">
