@@ -48,6 +48,5 @@ const Button = ({
 
 Button.propTypes = propTypes;
 Button.defaultProps = defaultProps;
-Button.displayName = 'Button';
 
 export default Button;

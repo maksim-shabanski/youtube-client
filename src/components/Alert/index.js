@@ -23,6 +23,5 @@ const Alert = ({ as: Component, variant, children }) => {
 
 Alert.propTypes = propTypes;
 Alert.defaultProps = defaultProps;
-Alert.displayName = 'Alert';
 
 export default Alert;

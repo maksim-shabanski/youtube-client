@@ -35,6 +35,5 @@ const Spinner = ({ as: Component, variant }) => {
 
 Spinner.propTypes = propTypes;
 Spinner.defaultProps = defaultProps;
-Spinner.displayName = 'Spinner';
 
 export default Spinner;

@@ -95,6 +95,5 @@ const Slider = React.forwardRef((props, ref) => {
 
 Slider.propTypes = propTypes;
 Slider.defaultProps = defaultProps;
-Slider.displayName = 'Slider';
 
 export default Slider;
