@@ -57,7 +57,7 @@ class App extends Component {
     numberFirstCardOnSelectedSlide: 1,
     isSliderAnimated: false,
     mouseStartPoint: null,
-    videosDataMap: new Map(),
+    videosDataMap: null,
   };
 
   sliderTrack = React.createRef();
@@ -72,7 +72,10 @@ class App extends Component {
 
   getTotalSlides() {
     const { videosDataMap, totalCardsOnSlide } = this.state;
-    return Math.ceil(videosDataMap.size / totalCardsOnSlide);
+    const totalSlides = videosDataMap
+      ? Math.ceil(videosDataMap.size / totalCardsOnSlide)
+      : 0;
+    return totalSlides;
   }
 
   handleResizeWindow = () => {
@@ -114,7 +117,7 @@ class App extends Component {
       {
         selectedSlide: 1,
         numberFirstCardOnSelectedSlide: 1,
-        videosDataMap: new Map(),
+        videosDataMap: null,
         pageToken: '',
         alert: {
           text: null,
@@ -248,7 +251,9 @@ class App extends Component {
   getVideosData = async () => {
     let newStateOptions;
     const { videosDataMap } = this.state;
-    const currentVideosDataMap = new Map([...videosDataMap]);
+    const currentVideosDataMap = videosDataMap
+      ? new Map([...videosDataMap])
+      : new Map();
 
     try {
       const videosIds = [];
@@ -388,7 +393,7 @@ class App extends Component {
           onChange={this.handleSearchTextChange}
           onSubmit={this.handleSubmitForm}
         />
-        {videosDataMap.size !== 0 && (
+        {videosDataMap && (
           <Slider
             ref={this.sliderTrack}
             videosDataMap={videosDataMap}
