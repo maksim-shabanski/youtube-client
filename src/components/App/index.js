@@ -78,6 +78,10 @@ class App extends Component {
     return totalSlides;
   }
 
+  updateSliderAnimatedState = () => {
+    this.setState({ isSliderAnimated: false });
+  };
+
   handleResizeWindow = () => {
     const { totalCardsOnSlide, numberFirstCardOnSelectedSlide } = this.state;
     const newTotalCardsOnSlide = App.getTotalCardsOnSlide();
@@ -234,18 +238,13 @@ class App extends Component {
       isLoadingDataStart = true;
     }
 
-    this.setState(
-      {
-        ...(isLoadingDataStart && { isLoadingData: true }),
-        isSliderAnimated: true,
-        selectedSlide: newSelectedSlide,
-        numberFirstCardOnSelectedSlide,
-        mouseStartPoint: null,
-      },
-      () => {
-        this.updateSliderAnimatedState();
-      }
-    );
+    this.setState({
+      ...(isLoadingDataStart && { isLoadingData: true }),
+      isSliderAnimated: true,
+      selectedSlide: newSelectedSlide,
+      numberFirstCardOnSelectedSlide,
+      mouseStartPoint: null,
+    });
   };
 
   getVideosData = async () => {
@@ -329,14 +328,6 @@ class App extends Component {
     return data;
   };
 
-  updateSliderAnimatedState = () => {
-    window.setTimeout(() => {
-      this.setState({
-        isSliderAnimated: false,
-      });
-    }, ANIMATION_DURATION);
-  };
-
   canChangeSlide = direction => {
     const { selectedSlide, isSliderAnimated } = this.state;
     const totalSlides = this.getTotalSlides();
@@ -410,6 +401,7 @@ class App extends Component {
             onTouchStart={this.handleDragStart}
             onTouchMove={this.handleDrag}
             onTouchEnd={this.handleDragEnd}
+            onTransitionEnd={this.updateSliderAnimatedState}
           />
         )}
         {alertText && <Alert variant={alertVariant}>{alertText}</Alert>}
