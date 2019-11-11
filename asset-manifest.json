@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/youtube-client/static/css/main.14202e17.chunk.css",
-    "main.js": "/youtube-client/static/js/main.4a3d5b4e.chunk.js",
-    "main.js.map": "/youtube-client/static/js/main.4a3d5b4e.chunk.js.map",
+    "main.js": "/youtube-client/static/js/main.4e5ff713.chunk.js",
+    "main.js.map": "/youtube-client/static/js/main.4e5ff713.chunk.js.map",
     "runtime~main.js": "/youtube-client/static/js/runtime~main.6cb01d31.js",
     "runtime~main.js.map": "/youtube-client/static/js/runtime~main.6cb01d31.js.map",
     "static/js/2.0e83a647.chunk.js": "/youtube-client/static/js/2.0e83a647.chunk.js",
     "static/js/2.0e83a647.chunk.js.map": "/youtube-client/static/js/2.0e83a647.chunk.js.map",
     "index.html": "/youtube-client/index.html",
-    "precache-manifest.0468b63d8446371500930be3fd2171af.js": "/youtube-client/precache-manifest.0468b63d8446371500930be3fd2171af.js",
+    "precache-manifest.4d6b457a0752312e8d59b52092ba2444.js": "/youtube-client/precache-manifest.4d6b457a0752312e8d59b52092ba2444.js",
     "service-worker.js": "/youtube-client/service-worker.js",
     "static/css/main.14202e17.chunk.css.map": "/youtube-client/static/css/main.14202e17.chunk.css.map"
   }
