@@ -117,23 +117,20 @@ class App extends Component {
       return false;
     }
 
-    this.setState(
-      {
-        selectedSlide: 1,
-        numberFirstCardOnSelectedSlide: 1,
-        videosDataMap: null,
-        pageToken: '',
-        alert: {
-          text: null,
-          variant: null,
-        },
-        showSpinner: true,
-        isLoadingData: true,
+    this.getVideosData();
+
+    this.setState({
+      selectedSlide: 1,
+      numberFirstCardOnSelectedSlide: 1,
+      videosDataMap: null,
+      pageToken: '',
+      alert: {
+        text: null,
+        variant: null,
       },
-      () => {
-        this.getVideosData();
-      }
-    );
+      showSpinner: true,
+      isLoadingData: true,
+    });
 
     return true;
   };
@@ -227,14 +224,20 @@ class App extends Component {
 
   handleSlideChange = direction => {
     let isLoadingDataStart = false;
-    const { totalCardsOnSlide, selectedSlide, isLoadingData } = this.state;
+    const {
+      pageToken,
+      videosDataMap,
+      totalCardsOnSlide,
+      selectedSlide,
+      isLoadingData,
+    } = this.state;
     const newSelectedSlide =
       direction === 'next' ? selectedSlide + 1 : selectedSlide - 1;
     const numberFirstCardOnSelectedSlide =
       (newSelectedSlide - 1) * totalCardsOnSlide + 1;
 
     if (!isLoadingData && this.isNeedToLoadCards(newSelectedSlide)) {
-      this.getVideosData();
+      this.getVideosData(pageToken, videosDataMap);
       isLoadingDataStart = true;
     }
 
@@ -247,16 +250,20 @@ class App extends Component {
     });
   };
 
-  getVideosData = async () => {
+  getVideosData = async (pageToken = '', videosDataMap = null) => {
     let newStateOptions;
-    const { videosDataMap } = this.state;
+    const { searchText, maxVideoResults } = this.state;
     const currentVideosDataMap = videosDataMap
       ? new Map([...videosDataMap])
       : new Map();
 
     try {
       const videosIds = [];
-      const basicVideosData = await this.getBasicVideosData();
+      const basicVideosData = await youTubeAPI.fetchBasicVideosData(
+        searchText,
+        pageToken,
+        maxVideoResults
+      );
       const {
         nextPageToken = '',
         items: basicVideosDataList,
@@ -315,17 +322,6 @@ class App extends Component {
     }
 
     return true;
-  };
-
-  getBasicVideosData = async () => {
-    const { searchText, pageToken, maxVideoResults } = this.state;
-    const data = await youTubeAPI.fetchBasicVideosData(
-      searchText,
-      pageToken,
-      maxVideoResults
-    );
-
-    return data;
   };
 
   canChangeSlide = direction => {
