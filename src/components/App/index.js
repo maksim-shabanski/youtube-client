@@ -246,7 +246,7 @@ class App extends Component {
   };
 
   getVideosData = async () => {
-    let stateOptions;
+    let newStateOptions;
     const { videosDataMap } = this.state;
     const currentVideosDataMap = new Map([...videosDataMap]);
 
@@ -257,6 +257,17 @@ class App extends Component {
         nextPageToken = '',
         items: basicVideosDataList,
       } = basicVideosData;
+
+      if (basicVideosDataList.length === 0 && currentVideosDataMap.size === 0) {
+        newStateOptions = {
+          alert: {
+            variant: 'warning',
+            text:
+              "We are so sorry! We couldn't find any video for your request.",
+          },
+        };
+        return false;
+      }
 
       basicVideosDataList.forEach(({ id: { videoId } }) => {
         if (!currentVideosDataMap.has(videoId)) {
@@ -277,23 +288,13 @@ class App extends Component {
         currentVideosDataMap.set(videoData.id, videoData);
       });
 
-      if (currentVideosDataMap.size > 0) {
-        stateOptions = {
-          pageToken: nextPageToken,
-          videosDataMap: currentVideosDataMap,
-        };
-      } else {
-        stateOptions = {
-          alert: {
-            variant: 'warning',
-            text:
-              "We are so sorry! We couldn't find any video for your request.",
-          },
-        };
-      }
+      newStateOptions = {
+        pageToken: nextPageToken,
+        videosDataMap: currentVideosDataMap,
+      };
     } catch (error) {
-      if (!currentVideosDataMap.size) {
-        stateOptions = {
+      if (currentVideosDataMap.size === 0) {
+        newStateOptions = {
           alert: {
             variant: 'warning',
             text:
@@ -301,13 +302,13 @@ class App extends Component {
           },
         };
       }
+    } finally {
+      this.setState({
+        ...newStateOptions,
+        showSpinner: false,
+        isLoadingData: false,
+      });
     }
-
-    this.setState({
-      ...stateOptions,
-      showSpinner: false,
-      isLoadingData: false,
-    });
 
     return true;
   };
