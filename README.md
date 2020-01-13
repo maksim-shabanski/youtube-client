@@ -1,4 +1,4 @@
-It's a test project was created for learning ReactJS and Redux libraries.
+It's a test project was created for learning ReactJS library.
   
 ## Description
 It's a small app to search videos from YouTube. The search results is displayed as a slider. Videos are uploaded by chunks and smoothly loaded as needed. For change slide we can use controls as well as use a mouse swipe.
